@@ -15,7 +15,7 @@ public class BulletDestroy : MonoBehaviour {
 
 	void OnCollisionEnter(Collision collision) {
 		if(collision.collider.tag == "Enemy") {
-			GameObject.Destroy(collision.gameObject);
+			GameObject.Destroy(collision.collider.gameObject);
 		}
 	}
 }
