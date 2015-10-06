@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
 
@@ -26,15 +27,15 @@ public class PlayerController : MonoBehaviour {
     void Update () {
 		playerMovement();
         playerLook();
-
     }
+
+
 
     void AddWeapon(string weaponType, string weaponName)
     {
         GameObject WEAPON = (GameObject)GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/" + weaponName));
         WEAPON.name = weaponName;
         WEAPON.transform.parent = GameObject.FindGameObjectWithTag("GunHolder").transform;
-        WEAPON.transform.localPosition = new Vector3(0f, 0f, 0f);
         gunSlots.Add(WEAPON);
     }
 

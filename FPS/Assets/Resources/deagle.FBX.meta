@@ -6,9 +6,17 @@ ModelImporter:
   serializedVersion: 18
   fileIDToRecycleName:
     100000: //RootNode
+    100002: Camera
+    100004: Lamp
+    100006: SMDImport
     400000: //RootNode
+    400002: Camera
+    400004: Lamp
+    400006: SMDImport
     2300000: //RootNode
+    2300002: SMDImport
     3300000: //RootNode
+    3300002: SMDImport
     4300000: SMDImport
     9500000: //RootNode
   materials:
@@ -34,7 +42,7 @@ ModelImporter:
     isReadable: 1
   meshes:
     lODScreenPercentages: []
-    globalScale: 8
+    globalScale: 10
     meshCompression: 0
     addColliders: 0
     importBlendShapes: 1
