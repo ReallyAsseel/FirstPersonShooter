@@ -1,38 +1,50 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviour {
 
-	public float forwards, right, delay, stoppingPower, up;
-	public float horizontal, vertical;
-	public float maxSpeed;
-	float gravity;
+	public float forwards, right, movementSpeed, stoppingPower, jumpSpeed, horizontal, vertical,
+                 maxSpeed, gravity, health;
 	public bool isGrounded;
-	Camera camera;
+    public List<GameObject> gunSlots;
+    Camera camera;
 
-	// Use this for initialization
 	void Start () {
-        forwards = 0;
-        right = 0;
-        up = 0;
-		delay = 0.03f;
+        forwards = 0f;
+        right = 0f;
+        jumpSpeed = 10.0f;
+		movementSpeed = 0.03f;
 		stoppingPower = 1.2f;
 		camera = GameObject.FindObjectOfType<Camera>();
-		maxSpeed = .1f;
+		maxSpeed = .15f;
 		gravity = 0f;
+        gunSlots = new List<GameObject>();
+        AddWeapon("Gun", "deagle");
 	}
-		// Update is called once per frame
-	void Update () {
+
+    void Update () {
 		playerMovement();
+        playerLook();
 
-		horizontal = Input.GetAxis("Mouse X");
-		vertical = Input.GetAxis("Mouse Y");
-		camera.transform.Rotate(new Vector3(-vertical * 2, 0, 0));
-		this.transform.Rotate(0, horizontal * 2, 0);
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = true;
+    }
 
-	}
+    void AddWeapon(string weaponType, string weaponName)
+    {
+        GameObject WEAPON = (GameObject)GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/" + weaponName));
+        WEAPON.name = weaponName;
+        WEAPON.transform.parent = GameObject.FindGameObjectWithTag("GunHolder").transform;
+        WEAPON.transform.localPosition = new Vector3(0f, 0f, 0f);
+        gunSlots.Add(WEAPON);
+    }
+
+    void SwitchWeapon()
+    {
+        if(Input.GetKeyDown(KeyCode.Q))
+        {
+
+        }
+    }
 
 	void OnCollisionEnter(Collision collision) {
 		if(collision.collider.tag == "Floor" && isGrounded) {
@@ -44,6 +56,16 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
+    void playerLook()
+    {
+        horizontal = Input.GetAxis("Mouse X");
+        vertical = Input.GetAxis("Mouse Y");
+        camera.transform.Rotate(new Vector3(-vertical * 2, 0, 0));
+        this.transform.Rotate(0, horizontal * 2, 0);
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
     void playerMovement()
     {
         GetComponent<Rigidbody>().position += transform.TransformDirection(new Vector3(right, gravity, forwards));
@@ -51,7 +73,7 @@ public class PlayerController : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
-            GetComponent<Rigidbody>().velocity = new Vector3(0f, 10f, 0f);
+            GetComponent<Rigidbody>().velocity = new Vector3(0f, jumpSpeed, 0f);
             isGrounded = false;
         } 
 
@@ -59,14 +81,14 @@ public class PlayerController : MonoBehaviour {
         {
             if (forwards < maxSpeed)
             {
-                forwards += delay;
+                forwards += movementSpeed;
             }
         }
         else if (Input.GetKey(KeyCode.DownArrow))
         {
             if (forwards > -maxSpeed)
             {
-                forwards -= delay;
+                forwards -= movementSpeed;
             }
         }
         else
@@ -81,14 +103,14 @@ public class PlayerController : MonoBehaviour {
         {
             if (right < maxSpeed)
             {
-                right += delay;
+                right += movementSpeed;
             }
         }
         else if (Input.GetKey(KeyCode.LeftArrow))
         {
             if (right > -maxSpeed)
             {
-                right -= delay;
+                right -= movementSpeed;
             }
         }
         else

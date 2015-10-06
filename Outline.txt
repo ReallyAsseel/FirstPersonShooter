@@ -1,0 +1,54 @@
+//UML OF FPS SHOOTER//
+
+// PLAYER CLASS //
+
+/* PLAYER -------------------------------------------------------------------------------------------------------------------
+     * MAIN CAMERA
+         * GUNSLOTS
+            *WEAPON1
+            *WEAPON2
+         * GRENADESLOTS
+            *GRENADE1
+            *GRENADE2
+         * MELEESLOT
+            *MELEEWEAPON 
+
+/* Properties:
+    -> Health
+    -> Movement Speed
+    -> Jumping Speed/Force
+
+ * FUNCTIONS:
+ *  -> INVENTORY OF WEAPONS (Array of two guns)             --> Array[] GunSlots = new Array[2];
+ *  -> ADDWEAPON            (Adds a gun to the GunSlots) --> AddWeapon(string WeaponType, string WeaponName)
+ *  -> DROPWEAPON           (Drops gun from GunSlots)    --> DropWeapon(string WeaponType, string WeaponName) *Use a forloop to find weapon and delete it*
+ *  -> SWAPWEAPON           (Replaces current with new)     --> SwapWeapon(string WeaponType, string WeaponName, GameObject currentWeapon) *Drop players current weapon and add new one*
+ *  -> AIM DOWN SIGHTS      (Player can ADS)                --> AimDownSight(GameObject currentWeapon)    *Zooms in current weapons ADS. each wpn has different zoom*
+ *  -> MOVEMENT             (Vert & Horz & Jump)            --> Movement(float movementSpeed, float maxSpeed, float maxJump) *Initializes player movement* <- make sprinting a set value
+ *  -> RELOAD         (Reloads current weapon)        --> ReloadWeapon(GameObject currentWeapon)      *Plays reload animation and reloads* Call ReloadWeapon()
+ *  -> SHOOT                (Shoots current weapon)         --> ShootWeapon(GameObject currentWeapon)       *Shoots current weapon* Subtract bullets in this function. Call ShootWeapon(true);
+ *  -> 
+ 
+-------------------------------------------------------------------------------------------------------------------
+ * 
+ * WEAPON-------------------------------------------------------------------------------------------------------------------
+ * 
+ * PROPERTIES:
+ *  -> Damage
+ *  -> Recoil
+ *  -> RateOfFire
+ *  -> ADS (bool)
+ *  -> MagazineSize
+ *  -> MagazineNumbers
+ *  -> ReloadTime
+ *  -> isAutomatic
+ *  -> Range
+ *  -> Name
+ *  
+ *  
+ * FUNCTIONS:
+ *  ->AimDownSights(string weaponName)      (plays ADS animation for specific weapon)   if(weaponName == "SCARH") { anim.play(SCARADS) }; THE ANIMATOR IS IN THE GUNHOLDER OBJECT.
+ *  ->ShootWeapon(bool wantsToShoot)        (Shoots the weapon)                         float timer = 0; if(timer < fireRate) { timer += value * deltaTime; } else { if(wantsToShoot) { if(bullets!=0) { firegun = true; bullets--; timer = 0; } else {reload();}}}
+ *  ->ReloadWeapon()                        (Reloads the weapon)                        if(bullets != magazineSize) { MagazineNumbers--; bullets == MagazineSize; }
+ *  ->SetPositionAndRotation(string weaponName)                 
+ */
