@@ -1,17 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
 
 	public float forwards, right, movementSpeed, stoppingPower, jumpSpeed, horizontal, vertical,
                  maxSpeed, gravity, health;
 	public bool isGrounded;
-    public List<GameObject> gunSlots;
+    public GameObject[] gunSlots;
+    public GameObject currentWeapon;
     Camera camera;
 
 	void Start () {
+        gunSlots = new GameObject[2];
+        AddWeapon("Gun", "SPAS 12", 1);
         forwards = 0f;
         right = 0f;
         jumpSpeed = 10.0f;
@@ -20,31 +22,65 @@ public class PlayerController : MonoBehaviour {
 		camera = GameObject.FindObjectOfType<Camera>();
 		maxSpeed = .15f;
 		gravity = 0f;
-        gunSlots = new List<GameObject>();
-        AddWeapon("Gun", "deagle");
 	}
 
     void Update () {
 		playerMovement();
         playerLook();
+        SwitchWeapon();
+        if (gunSlots[0] != null)
+        {
+            currentWeapon = gunSlots[0];
+        }
     }
 
 
 
-    void AddWeapon(string weaponType, string weaponName)
+    void AddWeapon(string weaponType, string weaponName, int slot)
     {
         GameObject WEAPON = (GameObject)GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/" + weaponName));
         WEAPON.name = weaponName;
-        WEAPON.transform.parent = GameObject.FindGameObjectWithTag("GunHolder").transform;
-        gunSlots.Add(WEAPON);
+        if (slot == 0)
+        {
+            WEAPON.transform.parent = GameObject.Find("GunHolder").transform;
+            gunSlots.SetValue(WEAPON, slot);
+        } else if(slot == 1)
+        {
+            WEAPON.transform.parent = GameObject.Find("SecondGun").transform;
+            gunSlots.SetValue(WEAPON, slot);
+        }
     }
 
     void SwitchWeapon()
     {
-        if(Input.GetKeyDown(KeyCode.Q))
+        if(Input.GetKeyDown(KeyCode.Alpha0))
         {
+            if (gunSlots[0] != null)
+            {
+                gunSlots[0].transform.SetParent(FindObjectOfType<GunMechanics>().GetComponent<GunMechanics>().PrimaryGunSlot.transform);
+            }
 
+            if(gunSlots[1] != null)
+            {
+                gunSlots[1].transform.SetParent(FindObjectOfType<GunMechanics>().GetComponent<GunMechanics>().SecondaryGunSlot.transform);
+            }
+        } else if(Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            if (gunSlots[0] != null)
+            {
+                gunSlots[0].transform.SetParent(FindObjectOfType<GunMechanics>().GetComponent<GunMechanics>().SecondaryGunSlot.transform);
+            }
+
+            if (gunSlots[1] != null)
+            {
+                gunSlots[1].transform.SetParent(FindObjectOfType<GunMechanics>().GetComponent<GunMechanics>().PrimaryGunSlot.transform);
+            }
         }
+    }
+
+    void SwapWeapon()
+    {
+
     }
 
 	void OnCollisionEnter(Collision collision) {
