@@ -5,40 +5,43 @@ using UnityEngine.UI;
 public class GunMechanics : MonoBehaviour {
 	public float bulletSpeed, CurrentRate, RateOfFire, ADSsmoothness, ReloadTime, Range, Damage, CurrentReloadRate, accuracy;
 	public int MagazineSize, NumberOfMagazines, rand, currentBullets, barrelCapacity;
-    public GameObject bulletSpawn, Muzzle, PrimaryGunSlot, SecondaryGunSlot;
-	public Vector3 Recoil;
-    public Camera camera;
+    public GameObject Muzzle, PrimaryGunSlot, SecondaryGunSlot;
+	public Vector3 Recoil;    
+	public Transform bulletSpawn, magazineSpawn;
 	public bool ADS, isAutomatic, isReloading, OutOfAmmo, MagazineDropped, isShotgun;
 	public GunMovement gunController;
     public PlayerController playerController;
     public Crosshairs crossHairs;
 
 	// Use this for initialization
-	void Start () {
-		bulletSpawn = GameObject.Find("BulletSpawn");
-        PrimaryGunSlot = GameObject.Find("GunHolder");
-        SecondaryGunSlot = GameObject.Find("SecondGun");
-        playerController = GameObject.FindObjectOfType<PlayerController>();
-		Muzzle = GameObject.Find("Muzzle");
+	public void Start () {
+		bulletSpawn = GameObject.Find(this.gameObject.name + "BulletSpawn").transform;
+		magazineSpawn = GameObject.Find(this.gameObject.name + "MagazineSpawn").transform;
+		PrimaryGunSlot = GameObject.Find("GunHolder");
+		SecondaryGunSlot = GameObject.Find("SecondGun");
+		playerController = GameObject.FindObjectOfType<PlayerController>();
+		if(playerController.currentWeapon.name == this.gameObject.name) {
+			Muzzle = GameObject.Find(this.gameObject.name + "Muzzle");
+		}
 		OutOfAmmo = false;
 		gunController = GetComponentInParent<GunMovement> ();
-        camera = GameObject.FindObjectOfType<Camera>();
-        ADS = false;
+		ADS = false;
 		isReloading = false;
-        OutOfAmmo = false;
-        MagazineDropped = false;
-        isShotgun = false;
+		OutOfAmmo = false;
+		MagazineDropped = false;
+		isShotgun = false;
 		CurrentRate = 0f;
 		CurrentReloadRate = 0f;
-		InitializeGuns();
-        crossHairs = GameObject.Find("CH").GetComponent<Crosshairs>();
+		InitializeGuns(this.gameObject.name);
+		crossHairs = GameObject.Find("CH").GetComponent<Crosshairs>();
     }
 
-    void InitializeGuns()
+    public void InitializeGuns(string name)
     {
-        switch (playerController.currentWeapon.name)
+
+        switch (name)
             {
-                case "deagle":
+                case "deagleModel":
                     bulletSpeed = 250.0f;
                     barrelCapacity = 1;
                     RateOfFire = 0.2f;
@@ -49,11 +52,11 @@ public class GunMechanics : MonoBehaviour {
                     ADSsmoothness = 2f;
                     currentBullets = 8;
                     isAutomatic = false;
-                    Recoil = new Vector3(-1.5f, -20f, 0.01f); //x is recoil in z, y is recoil in x axis, z is time
                     accuracy = 15f;
-                    setCrossHairs(accuracy);
+					Recoil = new Vector3(-1.5f, -20f, 0.01f); //x is recoil in z, y is recoil in x axis, z is time
+					setCrossHairs(accuracy);
                     break;
-                case "SPAS 12":
+                case "SPAS 12Model":
                     bulletSpeed = 250.0f;
                     barrelCapacity = 3;
                     RateOfFire = 0.5f;
@@ -66,71 +69,54 @@ public class GunMechanics : MonoBehaviour {
                     isAutomatic = false;
                     isShotgun = true;
                     accuracy = 40f;
-                    setCrossHairs(accuracy);
                     Recoil = new Vector3(-2.5f, -20f, 0.1f);
-
+					setCrossHairs(accuracy);
                     break;
             }
     }
 
 	// Update is called once per frame
 	void Update () {
-            gunReady();
-            AimDownSights();
-            Reload();
+            
 	}
 
-	void gunReady() {
-		//RECOIL
-		if(CurrentRate >= RateOfFire) {
-			if (GameObject.FindGameObjectsWithTag("Weapon").Length != 0)
-			{
-				Fire();
-			}
-		} else {
-			CurrentRate += 1f * Time.deltaTime;
-			Muzzle.GetComponent<SpriteRenderer>().enabled = false;
-		}
-	}
-
-	void AimDownSights()
+	public void AimDownSights(Camera camera)
 	{
-		if (Input.GetMouseButton(1))
+		ADS = true;
+        //crossHairs.ToggleCrossHairs(false);
+        ////anim.SetBool("ADS", true);
+        if (camera.fieldOfView < 29)
 		{
-			ADS = true;
-            //crossHairs.ToggleCrossHairs(false);
-            ////anim.SetBool("ADS", true);
-            if (camera.fieldOfView < 29)
-			{
-				camera.fieldOfView += ADSsmoothness;
-			}
-			else if (camera.fieldOfView > 31)
-			{
-				camera.fieldOfView -= ADSsmoothness;
-			}
+			camera.fieldOfView += ADSsmoothness;
 		}
-		else
+		else if (camera.fieldOfView > 31)
 		{
-			ADS = false;
-           // crossHairs.ToggleCrossHairs(true);
-			//anim.SetBool("ADS", false);
-			if (camera.fieldOfView < 59)
-			{
-				camera.fieldOfView += ADSsmoothness;
-			}
-			else if (camera.fieldOfView > 61)
-			{
-				camera.fieldOfView -= ADSsmoothness;
-			}
+			camera.fieldOfView -= ADSsmoothness;
+		}
+
+	}
+
+	public void ReturnFromSights(Camera camera) 
+	{
+		ADS = false;
+		// crossHairs.ToggleCrossHairs(true);
+		//anim.SetBool("ADS", false);
+		if (camera.fieldOfView < 59)
+		{
+			camera.fieldOfView += ADSsmoothness;
+		}
+		else if (camera.fieldOfView > 61)
+		{
+			camera.fieldOfView -= ADSsmoothness;
 		}
 	}
 
-    void setCrossHairs(float accuracy)
+    public void setCrossHairs(float accuracy)
     {
         GameObject.Find("CH").GetComponent<Crosshairs>().Radius = accuracy;
     }
 
-	void Reload()
+	public void Reload()
     {
 		//Animation play
 		if (isReloading)
@@ -153,22 +139,24 @@ public class GunMechanics : MonoBehaviour {
 		}
 	}
 
-    void DropMagazine() {
+    public void DropMagazine() {
         if (!MagazineDropped)
         {
             GameObject Magazine = (GameObject)Instantiate(Resources.Load("Prefabs/Magazine"), Vector3.zero, Quaternion.identity);
-            Magazine.transform.position = GameObject.Find("MagazineSpawn").transform.position;
+			if(this.gameObject.name == playerController.currentWeapon.name + "Model") {
+            	Magazine.transform.position = GameObject.Find(this.gameObject.name + "MagazineSpawn").transform.position;
+			}
             Magazine.GetComponent<Rigidbody>().AddTorque(50, 0f, 50f);
             MagazineDropped = true;
             GameObject.Destroy(Magazine, 5f);
         }
     }
 
-    void Fire()
+    public void Fire()
     {
 		//SHOOTING
-		if (Input.GetMouseButtonDown(0))
-        {
+	//	Debug.Log(this.gameObject.name);
+		//if(CurrentRate >= RateOfFire) {
 			if(currentBullets != 0) {
 				currentBullets--;
 				CurrentRate = 0;
@@ -180,29 +168,32 @@ public class GunMechanics : MonoBehaviour {
 				Muzzle.transform.localScale = new Vector3(a, a, a);
 				Muzzle.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Muzzle" + rand);
 				Muzzle.GetComponent<SpriteRenderer>().enabled = true;
-
-                if (!isShotgun)
-                {
-                    GameObject bulletclone;
-                    bulletclone = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/bullet"), transform.position, transform.rotation);
-                    bulletclone.transform.position = bulletSpawn.transform.position;
-                    bulletclone.GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed;
-                } else if(isShotgun)
-                {
-                    GameObject[] bulletclone = new GameObject[barrelCapacity];
-                    for (int i = 0; i < bulletclone.Length; i++)
-                    {
-                        bulletclone[i] = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/bullet"), transform.position, transform.rotation);
-                        bulletclone[i].transform.position = bulletSpawn.transform.position;
-                    }
-                    bulletclone[0].GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed;
-                    bulletclone[1].GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed + new Vector3(0.8f, 0.3f, 0f);
-                    bulletclone[2].GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed + new Vector3(-0.9f, 0.3f, 0f);
-
-                }
-            } else {
+				
+				if (!isShotgun)
+				{
+					GameObject bulletclone;
+					bulletclone = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/bullet"), transform.position, transform.rotation);
+					bulletclone.transform.position = bulletSpawn.position;
+					bulletclone.GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed;
+				} else if(isShotgun)
+				{
+					GameObject[] bulletclone = new GameObject[barrelCapacity];
+					for (int i = 0; i < bulletclone.Length; i++)
+					{
+						bulletclone[i] = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/bullet"), transform.position, transform.rotation);
+						bulletclone[i].transform.position = bulletSpawn.position;
+					}
+					bulletclone[0].GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed;
+					bulletclone[1].GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed + new Vector3(0.8f, 0.3f, 0f);
+					bulletclone[2].GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed + new Vector3(-0.9f, 0.3f, 0f);
+					
+				}
+			} else {
 				isReloading = true;
 			}
-        }
+		 //else {
+			//CurrentRate += 1f * Time.deltaTime;
+			//Muzzle.GetComponent<SpriteRenderer>().enabled = false;
+		//}
     }
 }
