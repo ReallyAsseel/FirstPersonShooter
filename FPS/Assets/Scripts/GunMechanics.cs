@@ -75,7 +75,6 @@ public class GunMechanics : MonoBehaviour {
             }
     }
 
-	// Update is called once per frame
 	void Update () {
             
 	}
@@ -83,8 +82,7 @@ public class GunMechanics : MonoBehaviour {
 	public void AimDownSights(Camera camera)
 	{
 		ADS = true;
-        //crossHairs.ToggleCrossHairs(false);
-        ////anim.SetBool("ADS", true);
+        crossHairs.ToggleCrossHairs(false);
         if (camera.fieldOfView < 29)
 		{
 			camera.fieldOfView += ADSsmoothness;
@@ -99,8 +97,7 @@ public class GunMechanics : MonoBehaviour {
 	public void ReturnFromSights(Camera camera) 
 	{
 		ADS = false;
-		// crossHairs.ToggleCrossHairs(true);
-		//anim.SetBool("ADS", false);
+		crossHairs.ToggleCrossHairs(true);
 		if (camera.fieldOfView < 59)
 		{
 			camera.fieldOfView += ADSsmoothness;
@@ -126,7 +123,7 @@ public class GunMechanics : MonoBehaviour {
                 DropMagazine();
                 CurrentReloadRate += 1 * Time.deltaTime;
 			} else { //Actual reloading takes place here.
-				if(NumberOfMagazines != 0) {
+				if(NumberOfMagazines > 0) {
                     MagazineDropped = false;
 					NumberOfMagazines--;
 					currentBullets = MagazineSize;
@@ -154,46 +151,41 @@ public class GunMechanics : MonoBehaviour {
 
     public void Fire()
     {
-		//SHOOTING
-	//	Debug.Log(this.gameObject.name);
-		//if(CurrentRate >= RateOfFire) {
-			if(currentBullets != 0) {
-				currentBullets--;
-				CurrentRate = 0;
-				rand = Random.Range(1, 3);
-				float a = Random.Range(0.2f, 0.5f);
-				if(gunController.isFiring) {
-					gunController.wantedPosition = gunController.firePosition;
-				}
-				Muzzle.transform.localScale = new Vector3(a, a, a);
-				Muzzle.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Muzzle" + rand);
-				Muzzle.GetComponent<SpriteRenderer>().enabled = true;
-				
-				if (!isShotgun)
-				{
-					GameObject bulletclone;
-					bulletclone = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/bullet"), transform.position, transform.rotation);
-					bulletclone.transform.position = bulletSpawn.position;
-					bulletclone.GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed;
-				} else if(isShotgun)
-				{
-					GameObject[] bulletclone = new GameObject[barrelCapacity];
-					for (int i = 0; i < bulletclone.Length; i++)
-					{
-						bulletclone[i] = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/bullet"), transform.position, transform.rotation);
-						bulletclone[i].transform.position = bulletSpawn.position;
-					}
-					bulletclone[0].GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed;
-					bulletclone[1].GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed + new Vector3(0.8f, 0.3f, 0f);
-					bulletclone[2].GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed + new Vector3(-0.9f, 0.3f, 0f);
-					
-				}
-			} else {
-				isReloading = true;
+	//SHOOTING
+		if(currentBullets != 0 && !OutOfAmmo) {
+			currentBullets--;
+			CurrentRate = 0;
+			rand = Random.Range(1, 3);
+			float a = Random.Range(0.2f, 0.5f);
+			if(gunController.isFiring) {
+				gunController.wantedPosition = gunController.firePosition;
 			}
-		 //else {
-			//CurrentRate += 1f * Time.deltaTime;
-			//Muzzle.GetComponent<SpriteRenderer>().enabled = false;
-		//}
+			Muzzle.transform.localScale = new Vector3(a, a, a);
+			Muzzle.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Muzzle" + rand);
+			Muzzle.GetComponent<SpriteRenderer>().enabled = true;
+				
+			if (!isShotgun)
+			{
+				GameObject bulletclone;
+				bulletclone = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/bullet"), transform.position, transform.rotation);
+				bulletclone.transform.position = bulletSpawn.position;
+				bulletclone.GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed;
+			} else if(isShotgun)
+			{
+				GameObject[] bulletclone = new GameObject[barrelCapacity];
+				for (int i = 0; i < bulletclone.Length; i++)
+				{
+					bulletclone[i] = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/bullet"), transform.position, transform.rotation);
+					bulletclone[i].transform.position = bulletSpawn.position;
+				}
+				bulletclone[0].GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed;
+				bulletclone[1].GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed + new Vector3(8f, 1f, 0f);
+				bulletclone[2].GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed + new Vector3(-8f, 1f, 0f);
+					
+			}
+		} else if(NumberOfMagazines != 0)
+        {
+			isReloading = true;
+		}
     }
 }
