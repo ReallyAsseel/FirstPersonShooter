@@ -4,7 +4,7 @@ using System.Collections;
 public class GunMovement : MonoBehaviour {
 
     public Vector3 ADSPosition, StillPosition, wantedPosition, firePosition;
-    public bool isFiring;
+    public bool isFiring, isPickup;
 	public GunMechanics bulletControl;
     public PlayerController playerController;
     Animator anim;
@@ -30,7 +30,8 @@ public class GunMovement : MonoBehaviour {
             {
                 anim.SetBool("Reload", false);
             }
-
+			
+			AddWeapon();
            // if (playerController.isSprinting)
            // {
            //     anim.SetBool("Sprint", true);
@@ -57,6 +58,14 @@ public class GunMovement : MonoBehaviour {
     {
         wantedPosition = ADSPosition;
     }
+
+	public void AddWeapon() {
+		if(this.gameObject.tag == "Pickup") {
+			if(this.gameObject.GetComponent<Animator>() != null)
+			anim.SetBool("Pickup", true);
+		}
+	}
+
     void Gunmovement()
     {
         if (Input.GetMouseButton(1))

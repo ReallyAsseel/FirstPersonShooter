@@ -8,32 +8,36 @@ public class GunMechanics : MonoBehaviour {
     public GameObject Muzzle, PrimaryGunSlot, SecondaryGunSlot;
 	public Vector3 Recoil;    
 	public Transform bulletSpawn, magazineSpawn;
-	public bool ADS, isAutomatic, isReloading, OutOfAmmo, MagazineDropped, isShotgun;
+	public bool ADS, isAutomatic, isReloading, OutOfAmmo, MagazineDropped, isShotgun, canPickup;
 	public GunMovement gunController;
     public PlayerController playerController;
     public Crosshairs crossHairs;
 
 	// Use this for initialization
 	public void Start () {
-		bulletSpawn = GameObject.Find(this.gameObject.name + "BulletSpawn").transform;
-		magazineSpawn = GameObject.Find(this.gameObject.name + "MagazineSpawn").transform;
-		PrimaryGunSlot = GameObject.Find("GunHolder");
-		SecondaryGunSlot = GameObject.Find("SecondGun");
 		playerController = GameObject.FindObjectOfType<PlayerController>();
-		if(playerController.currentWeapon.name == this.gameObject.name) {
-			Muzzle = GameObject.Find(this.gameObject.name + "Muzzle");
+		if(this.gameObject.tag == "Weapon") {
+			canPickup = false;
+			bulletSpawn = GameObject.Find(this.gameObject.name + "BulletSpawn").transform;
+			magazineSpawn = GameObject.Find(this.gameObject.name + "MagazineSpawn").transform;
+			PrimaryGunSlot = GameObject.Find("GunHolder");
+			SecondaryGunSlot = GameObject.Find("SecondGun");
+			OutOfAmmo = false;
+			gunController = GetComponentInParent<GunMovement> ();
+			ADS = false;
+			isReloading = false;
+			OutOfAmmo = false;
+			MagazineDropped = false;
+			isShotgun = false;
+			CurrentRate = 0f;
+			CurrentReloadRate = 0f;
+			InitializeGuns(this.gameObject.name);
+			crossHairs = GameObject.Find("CH").GetComponent<Crosshairs>();
+			if(playerController.currentWeapon.name == this.gameObject.name) {
+				Muzzle = GameObject.Find(this.gameObject.name + "Muzzle");
+				Muzzle.GetComponent<Image>().enabled = false;
+			}
 		}
-		OutOfAmmo = false;
-		gunController = GetComponentInParent<GunMovement> ();
-		ADS = false;
-		isReloading = false;
-		OutOfAmmo = false;
-		MagazineDropped = false;
-		isShotgun = false;
-		CurrentRate = 0f;
-		CurrentReloadRate = 0f;
-		InitializeGuns(this.gameObject.name);
-		crossHairs = GameObject.Find("CH").GetComponent<Crosshairs>();
     }
 
     public void InitializeGuns(string name)
@@ -76,7 +80,42 @@ public class GunMechanics : MonoBehaviour {
     }
 
 	void Update () {
-            
+	
+	}
+
+
+	void OnTriggerEnter(Collider collider) {
+		if(this.gameObject.tag == "Pickup") {
+			if(collider.tag == "Player") {
+				//Display "press f to pick up"
+				GameObject.Find("PickupText").GetComponent<Text>().enabled = true;
+				canPickup = true;
+				if(Input.GetKey(KeyCode.Alpha0)) {
+					if(playerController.gunSlots[1] == null) {
+						if(playerController.gunSlots[0] == null) {
+							playerController.AddWeapon("Gun", this.gameObject.transform.parent.name, 0);
+						} else {
+							playerController.AddWeapon("Gun", this.gameObject.transform.parent.name, 1);
+						}
+					} else {
+						playerController.SwapWeapon(this.gameObject.transform.parent.name);
+					}
+					gameObject.GetComponentInParent<Animator>().Stop();
+					GameObject.Find("PickupText").GetComponent<Text>().enabled = false;
+					Destroy(gameObject);
+				}
+			}
+		}
+	}
+
+	void OnTriggerExit(Collider collider) {
+		if(this.gameObject.tag == "Pickup") {
+			if(collider.tag == "Player") {
+				//Display "press f to pick up"
+				GameObject.Find("PickupText").GetComponent<Text>().enabled = false;
+				canPickup = false;
+			}
+		}
 	}
 
 	public void AimDownSights(Camera camera)
