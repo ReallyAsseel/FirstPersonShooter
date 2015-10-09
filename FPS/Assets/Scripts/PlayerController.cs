@@ -10,10 +10,14 @@ public class PlayerController : MonoBehaviour {
     public GameObject[] gunSlots;
     public GameObject currentWeapon, secondaryWeapon;
     public Camera camera;
+    public List<string> weaponNames;
 
 	void Start () {
+        weaponNames = new List<string>();
+        weaponNames.Add("deagle");
+        weaponNames.Add("SPAS 12");
         gunSlots = new GameObject[2];
-		AddWeapon("Gun", "deagle", 0);
+		AddWeapon("Gun", "deagle");
 		if (gunSlots[0] != null)
 		{
 			currentWeapon = gunSlots[0];
@@ -43,38 +47,58 @@ public class PlayerController : MonoBehaviour {
 			currentWeapon.GetComponentInChildren<GunMechanics>().Reload();
 		}
         GameObject.Find("CH").GetComponent<Crosshairs>().Radius = currentWeapon.GetComponentInChildren<GunMechanics>().accuracy;
+        if (GameObject.Find("Trash") != null)
+        {
+            GameObject.Destroy(GameObject.Find("Trash"), 3);
+        }
     }
 
-    public void AddWeapon(string weaponType, string weaponName, int slot)
+    string ProperWeaponString(string weaponpickup)
     {
-        GameObject WEAPON = (GameObject)GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/" + weaponName));
-        WEAPON.name = weaponName;
+        string weaponname = null;
+        for (int i = 0; i < weaponNames.Count; i++)
+        {
+            if (weaponpickup.Contains(weaponNames[i]))
+            {
+                weaponname = weaponNames[i];
+            }
+        }
+        return weaponname;
+    }
 
-		if(gunSlots[0] == null) {
+    public void AddWeapon(string weaponType, string weaponName)
+    {
+        GameObject WEAPON = (GameObject)GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/" + ProperWeaponString(weaponName)));
+        WEAPON.name = ProperWeaponString(weaponName);
+
+        if (gunSlots[0] == null) {
 			WEAPON.transform.parent = GameObject.Find("GunHolder").transform;
 			gunSlots.SetValue(WEAPON, 0);
-		} else if(gunSlots[1] == null) {
+            currentWeapon = gunSlots[0];
+            currentWeapon.GetComponentInChildren<GunMechanics>().Start();
+        } else if(gunSlots[1] == null) {
 			WEAPON.transform.parent = GameObject.Find("SecondGun").transform;
 			gunSlots.SetValue(WEAPON, 1);
-		}
-        /*if (slot == 0)
+            secondaryWeapon = gunSlots[1];
+            secondaryWeapon.GetComponentInChildren<GunMechanics>().Start();
+        } else 
         {
-            WEAPON.transform.parent = GameObject.Find("GunHolder").transform;
-            gunSlots.SetValue(WEAPON, slot);
-        } else if(slot == 1)
-        {
-            WEAPON.transform.parent = GameObject.Find("SecondGun").transform;
-            gunSlots.SetValue(WEAPON, slot);
-        }*/
-		if (gunSlots[0] != null)
-		{
-			currentWeapon = gunSlots[0];
-			currentWeapon.GetComponentInChildren<GunMechanics>().Start();
-		}
-		if (gunSlots[1] != null) {
-			secondaryWeapon = gunSlots[1];
-			secondaryWeapon.GetComponentInChildren<GunMechanics>().Start();
-		}
+            if (WEAPON.name  != secondaryWeapon.name)
+            {
+                WEAPON.transform.parent = GameObject.Find("GunHolder").transform;
+                WEAPON.GetComponentInChildren<GunMechanics>().bulletSpawn = GameObject.Find(WEAPON.name + "ModelBulletSpawn").transform;
+                WEAPON.GetComponentInChildren<GunMechanics>().magazineSpawn = GameObject.Find(WEAPON.name + "ModelMagazineSpawn").transform;
+                gunSlots.SetValue(WEAPON, 0);
+                currentWeapon.transform.parent = null;
+                currentWeapon.name = "Trash";
+                foreach (Transform child in currentWeapon.transform)
+                {
+                    child.name = "Trash";
+                }
+                currentWeapon = gunSlots[0];
+                currentWeapon.GetComponentInChildren<GunMechanics>().Start();
+            }         
+        }
     }
 
     void SwitchWeapon()
@@ -100,8 +124,6 @@ public class PlayerController : MonoBehaviour {
 
     public void SwapWeapon(string weaponName)
     {
-		//GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/" + currentWeapon.name), transform.position, transform.rotation);
-		Destroy(currentWeapon);
 		GameObject WEAPON = (GameObject)GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/" + weaponName));
 		WEAPON.name = weaponName;
 		gunSlots[0] = WEAPON;
@@ -170,13 +192,13 @@ public class PlayerController : MonoBehaviour {
         if (isGrounded)
         {
             isSprinting = Input.GetKey(KeyCode.LeftShift);
-            GameObject.FindGameObjectWithTag("GunHolder").GetComponent<Animator>().SetBool("Sprint", isSprinting);
         } else
         {
             isSprinting = false;
         }
 
-        
+        GameObject.FindGameObjectWithTag("GunHolder").GetComponent<Animator>().SetBool("Sprint", isSprinting);
+
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {

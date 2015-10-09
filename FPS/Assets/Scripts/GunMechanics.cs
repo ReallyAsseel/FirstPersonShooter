@@ -18,9 +18,10 @@ public class GunMechanics : MonoBehaviour {
 		playerController = GameObject.FindObjectOfType<PlayerController>();
 		if(this.gameObject.tag == "Weapon") {
 			canPickup = false;
-			bulletSpawn = GameObject.Find(this.gameObject.name + "BulletSpawn").transform;
-			magazineSpawn = GameObject.Find(this.gameObject.name + "MagazineSpawn").transform;
-			PrimaryGunSlot = GameObject.Find("GunHolder");
+            Muzzle = GameObject.Find(this.gameObject.name + "Muzzle");
+            bulletSpawn = GameObject.Find(this.gameObject.name + "BulletSpawn").transform;
+            magazineSpawn = GameObject.Find(this.gameObject.name + "MagazineSpawn").transform;
+            PrimaryGunSlot = GameObject.Find("GunHolder");
 			SecondaryGunSlot = GameObject.Find("SecondGun");
 			OutOfAmmo = false;
 			gunController = GetComponentInParent<GunMovement> ();
@@ -33,11 +34,10 @@ public class GunMechanics : MonoBehaviour {
 			CurrentReloadRate = 0f;
 			InitializeGuns(this.gameObject.name);
 			crossHairs = GameObject.Find("CH").GetComponent<Crosshairs>();
-			if(playerController.currentWeapon.name == this.gameObject.name) {
-				Muzzle = GameObject.Find(this.gameObject.name + "Muzzle");
-				Muzzle.GetComponent<Image>().enabled = false;
-			}
-		}
+			//if(playerController.currentWeapon.name + "Model" == this.gameObject.name) {
+				
+			//}
+        }
     }
 
     public void InitializeGuns(string name)
@@ -80,7 +80,25 @@ public class GunMechanics : MonoBehaviour {
     }
 
 	void Update () {
-	
+	    if(this.gameObject.tag == "Pickup")
+        {
+            if (Input.GetKey(KeyCode.F) && canPickup)
+            {
+                if (playerController.secondaryWeapon == null)
+                {
+                    playerController.AddWeapon("Gun", this.gameObject.transform.parent.name);
+                    gameObject.GetComponentInParent<Animator>().Stop();
+                    GameObject.Find("PickupText").GetComponent<Text>().enabled = false;
+                    Destroy(gameObject);
+                } else if(this.gameObject.name != playerController.secondaryWeapon.name + "Model")
+                {
+                    playerController.AddWeapon("Gun", this.gameObject.transform.parent.name);
+                    gameObject.GetComponentInParent<Animator>().Stop();
+                    GameObject.Find("PickupText").GetComponent<Text>().enabled = false;
+                    Destroy(gameObject);
+                }
+            }
+        }
 	}
 
 
@@ -90,20 +108,6 @@ public class GunMechanics : MonoBehaviour {
 				//Display "press f to pick up"
 				GameObject.Find("PickupText").GetComponent<Text>().enabled = true;
 				canPickup = true;
-				if(Input.GetKey(KeyCode.Alpha0)) {
-					if(playerController.gunSlots[1] == null) {
-						if(playerController.gunSlots[0] == null) {
-							playerController.AddWeapon("Gun", this.gameObject.transform.parent.name, 0);
-						} else {
-							playerController.AddWeapon("Gun", this.gameObject.transform.parent.name, 1);
-						}
-					} else {
-						playerController.SwapWeapon(this.gameObject.transform.parent.name);
-					}
-					gameObject.GetComponentInParent<Animator>().Stop();
-					GameObject.Find("PickupText").GetComponent<Text>().enabled = false;
-					Destroy(gameObject);
-				}
 			}
 		}
 	}
@@ -180,7 +184,14 @@ public class GunMechanics : MonoBehaviour {
         {
             GameObject Magazine = (GameObject)Instantiate(Resources.Load("Prefabs/Magazine"), Vector3.zero, Quaternion.identity);
 			if(this.gameObject.name == playerController.currentWeapon.name + "Model") {
-            	Magazine.transform.position = GameObject.Find(this.gameObject.name + "MagazineSpawn").transform.position;
+                Debug.Log(this.gameObject.name);
+                if (magazineSpawn != null)
+                {
+                    Magazine.transform.position = magazineSpawn.position;
+                } else
+                {
+                    magazineSpawn = GameObject.Find(this.gameObject.name + "MagazineSpawn").transform;
+                }
 			}
             Magazine.GetComponent<Rigidbody>().AddTorque(50, 0f, 50f);
             MagazineDropped = true;
@@ -215,7 +226,13 @@ public class GunMechanics : MonoBehaviour {
 				for (int i = 0; i < bulletclone.Length; i++)
 				{
 					bulletclone[i] = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/bullet"), transform.position, transform.rotation);
-					bulletclone[i].transform.position = bulletSpawn.position;
+                    if (bulletSpawn != null)
+                    {
+                        bulletclone[i].transform.position = bulletSpawn.position;
+                    } else
+                    {
+                        bulletSpawn = GameObject.Find(this.gameObject.name + "BulletSpawn").transform;
+                    }
 				}
 				bulletclone[0].GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed;
 				bulletclone[1].GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed + new Vector3(8f, 1f, 0f);
