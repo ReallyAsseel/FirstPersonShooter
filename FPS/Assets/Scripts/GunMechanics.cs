@@ -8,7 +8,7 @@ public class GunMechanics : MonoBehaviour {
     public GameObject Muzzle, PrimaryGunSlot, SecondaryGunSlot;
 	public Vector3 Recoil;    
 	public Transform bulletSpawn, magazineSpawn;
-	public bool ADS, isAutomatic, isReloading, OutOfAmmo, MagazineDropped, isShotgun, canPickup;
+	public bool ADS, isAutomatic, isReloading, OutOfAmmo, MagazineDropped, isShotgun, canPickup, isSniper;
 	public GunMovement gunController;
     public PlayerController playerController;
     public Crosshairs crossHairs;
@@ -30,6 +30,7 @@ public class GunMechanics : MonoBehaviour {
 			OutOfAmmo = false;
 			MagazineDropped = false;
 			isShotgun = false;
+			isSniper = false;
 			isAutomatic = false;
 			CurrentRate = 0f;
 			CurrentReloadRate = 0f;
@@ -90,8 +91,25 @@ public class GunMechanics : MonoBehaviour {
 					currentBullets = 30;
 					isAutomatic = true;
 					isShotgun = false;
-					accuracy = 25f;
-					Recoil = new Vector3(-0.5f, -10f, 0.05f);
+					accuracy = 50f;
+					Recoil = new Vector3(-0.1f, -5f, 0.06f);
+					setCrossHairs(accuracy);
+					break;
+				case "DruganovModel":
+					bulletSpeed = 250.0f;
+					barrelCapacity = 1;
+					RateOfFire = 1.5f;
+					Damage = 100f;
+					MagazineSize = 5;
+					NumberOfMagazines = 5;
+					ReloadTime = 1f;
+					ADSsmoothness = 1.5f;
+					currentBullets = 5;
+					isAutomatic = false;
+					isShotgun = false;
+					isSniper = true;
+					accuracy = 1f;
+					Recoil = new Vector3(-3f, -20f, 0.5f);
 					setCrossHairs(accuracy);
 					break;
             }
@@ -144,13 +162,25 @@ public class GunMechanics : MonoBehaviour {
 	{
 		ADS = true;
         crossHairs.ToggleCrossHairs(false);
-        if (camera.fieldOfView < 29)
-		{
-			camera.fieldOfView += ADSsmoothness;
-		}
-		else if (camera.fieldOfView > 31)
-		{
-			camera.fieldOfView -= ADSsmoothness;
+
+		if(!isSniper) {
+	        if (camera.fieldOfView < 29)
+			{
+				camera.fieldOfView += ADSsmoothness;
+			}
+			else if (camera.fieldOfView > 31)
+			{
+				camera.fieldOfView -= ADSsmoothness;
+			}
+		} else {
+			if (camera.fieldOfView < 5)
+			{
+				camera.fieldOfView += ADSsmoothness;
+			}
+			else if (camera.fieldOfView > 6)
+			{
+				camera.fieldOfView -= ADSsmoothness;
+			}
 		}
 
 	}

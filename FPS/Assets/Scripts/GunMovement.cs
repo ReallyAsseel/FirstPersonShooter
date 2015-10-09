@@ -23,7 +23,7 @@ public class GunMovement : MonoBehaviour {
 	void Update () {
        // if (this.gameObject.name == playerController.currentWeapon.name)
        // {
-		if (!isPickup) {
+		if (!isPickup && this.gameObject.GetComponentInChildren<GunMechanics>() != null) {
 			transform.localPosition = Vector3.Lerp (transform.localPosition, wantedPosition, bulletControl.ADSsmoothness / 6f);
 			firePosition = new Vector3 (transform.localPosition.x, transform.localPosition.y, bulletControl.Recoil.x);
 			if (bulletControl.isReloading) {
@@ -63,7 +63,7 @@ public class GunMovement : MonoBehaviour {
         if (Input.GetMouseButton(1))
         {
            // wantedPosition = ADSPosition;
-			if(!this.gameObject.GetComponentInChildren<GunMechanics>().isAutomatic) {
+			if(this.gameObject.GetComponentInChildren<GunMechanics>() != null && !this.gameObject.GetComponentInChildren<GunMechanics>().isAutomatic) {
 	            if (Input.GetMouseButtonDown(0))
 	            {
 	                isFiring = true;

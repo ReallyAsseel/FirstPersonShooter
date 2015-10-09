@@ -17,7 +17,9 @@ public class PlayerController : MonoBehaviour {
         weaponNames.Add("deagle");
         weaponNames.Add("SPAS 12");
 		weaponNames.Add ("G36C");
+		weaponNames.Add("Druganov");
         gunSlots = new GameObject[2];
+		AddWeapon("Gun", "Druganov");
 		AddWeapon("Gun", "G36C");
 		if (gunSlots[0] != null)
 		{
