@@ -15,32 +15,27 @@ public class GunMovement : MonoBehaviour {
         anim = this.gameObject.GetComponent<Animator>();
         playerController = GetComponentInParent<PlayerController>();
         Still();
+		if(this.gameObject.tag == "Pickup") {
+			isPickup = true;
+		}
 	}
 	
 	void Update () {
        // if (this.gameObject.name == playerController.currentWeapon.name)
        // {
-            transform.localPosition = Vector3.Lerp(transform.localPosition, wantedPosition, bulletControl.ADSsmoothness / 6f);
-            firePosition = new Vector3(transform.localPosition.x, transform.localPosition.y, bulletControl.Recoil.x);
-            if (bulletControl.isReloading)
-            {
-                anim.SetBool("Reload", true);
-            }
-            else
-            {
-                anim.SetBool("Reload", false);
-            }
+		if (!isPickup) {
+			transform.localPosition = Vector3.Lerp (transform.localPosition, wantedPosition, bulletControl.ADSsmoothness / 6f);
+			firePosition = new Vector3 (transform.localPosition.x, transform.localPosition.y, bulletControl.Recoil.x);
+			if (bulletControl.isReloading) {
+				anim.SetBool ("Reload", true);
+			} else {
+				anim.SetBool ("Reload", false);
+			}
 			
-			AddWeapon();
-           // if (playerController.isSprinting)
-           // {
-           //     anim.SetBool("Sprint", true);
-           // }
-           // else
-           // {
-           //     anim.SetBool("Sprint", false);
-           // }
-            Gunmovement();
+			Gunmovement ();
+		} else {
+			PickupAnimation ();
+		}
        // }
     }
 
@@ -59,11 +54,8 @@ public class GunMovement : MonoBehaviour {
         wantedPosition = ADSPosition;
     }
 
-	public void AddWeapon() {
-		if(this.gameObject.tag == "Pickup") {
-			if(this.gameObject.GetComponent<Animator>() != null)
-			anim.SetBool("Pickup", true);
-		}
+	public void PickupAnimation() {
+		anim.SetBool ("Pickup", true);
 	}
 
     void Gunmovement()
@@ -71,21 +63,28 @@ public class GunMovement : MonoBehaviour {
         if (Input.GetMouseButton(1))
         {
            // wantedPosition = ADSPosition;
-            if (Input.GetMouseButtonDown(0))
-            {
-                isFiring = true;
-            }
-            else
-            {
-                isFiring = false;
-            }
+			if(!this.gameObject.GetComponentInChildren<GunMechanics>().isAutomatic) {
+	            if (Input.GetMouseButtonDown(0))
+	            {
+	                isFiring = true;
+	            }
+	            else
+	            {
+	                isFiring = false;
+	            }
+			} else {
+				isFiring = Input.GetMouseButton(0);
+			}
         }
-        else if (Input.GetMouseButtonDown(0))
-        {
-            isFiring = true;
-        } else
-        {
-            isFiring = false;
-        }
-    }
+		else if (this.gameObject.GetComponentInChildren<GunMechanics>() != null && !this.gameObject.GetComponentInChildren<GunMechanics>().isAutomatic)
+		{
+			if(Input.GetMouseButtonDown(0)) {
+				isFiring = true;
+			} else {
+				isFiring = false;
+			}
+		} else if(this.gameObject.GetComponentInChildren<GunMechanics>() != null && this.gameObject.GetComponentInChildren<GunMechanics>().isAutomatic) {
+			isFiring = Input.GetMouseButton(0);
+		}
+	}
 }

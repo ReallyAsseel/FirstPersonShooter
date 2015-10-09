@@ -14,6 +14,13 @@ ModelImporter:
     100012: TPhotometricLight002
     100014: TPhotometricLight002.Target
     100016: TRIGGER
+    100018: TPhotometricLight001.001
+    100020: TPhotometricLight001.Target.001
+    100022: TPhotometricLight002.001
+    100024: TPhotometricLight002.Target.001
+    100026: Camera
+    100028: FR_shotgun.vtf
+    100030: Lamp
     400000: EJECTIONPORT
     400002: Mesh_0010
     400004: POMPEH
@@ -23,22 +30,130 @@ ModelImporter:
     400012: TPhotometricLight002
     400014: TPhotometricLight002.Target
     400016: TRIGGER
+    400018: TPhotometricLight001.001
+    400020: TPhotometricLight001.Target.001
+    400022: TPhotometricLight002.001
+    400024: TPhotometricLight002.Target.001
+    400026: Camera
+    400028: FR_shotgun.vtf
+    400030: Lamp
     2300000: EJECTIONPORT
     2300002: Mesh_0010
     2300004: POMPEH
     2300006: TRIGGER
+    2300008: //RootNode
+    2300010: FR_shotgun.vtf
     3300000: EJECTIONPORT
     3300002: Mesh_0010
     3300004: POMPEH
     3300006: TRIGGER
+    3300008: //RootNode
+    3300010: FR_shotgun.vtf
     4300000: Mesh_0010
     4300002: EJECTIONPORT
     4300004: TRIGGER
     4300006: POMPEH
+    4300008: FR_shotgun.vtf
     7400000: Take 001
+    7400002: POMPEH|EJECTIONPORT|Take 001|BaseLayer
+    7400004: POMPEH|g36c_foregrip|Take 001|BaseLayer
+    7400006: POMPEH|g36c_foregrip|Take 001|BaseLayer.001
+    7400008: POMPEH|g36c_holographic|Take 001|BaseLayer
+    7400010: POMPEH|g36c_holographic|Take 001|BaseLayer.001
+    7400012: POMPEH|Mesh_0010|Take 001|BaseLayer
+    7400014: POMPEH|POMPEH|Take 001|BaseLayer
+    7400016: POMPEH|TPhotometricLight001.Target|Take 001|BaseLayer
+    7400018: POMPEH|TPhotometricLight001|Take 001|BaseLayer
+    7400020: POMPEH|TPhotometricLight002.Target|Take 001|BaseLayer
+    7400022: POMPEH|TPhotometricLight002|Take 001|BaseLayer
+    7400024: POMPEH|TRIGGER|Take 001|BaseLayer
+    7400026: TRIGGER|EJECTIONPORT|Take 001|BaseLayer
+    7400028: TRIGGER|g36c_foregrip|Take 001|BaseLayer
+    7400030: TRIGGER|g36c_foregrip|Take 001|BaseLayer.001
+    7400032: TRIGGER|g36c_holographic|Take 001|BaseLayer
+    7400034: TRIGGER|g36c_holographic|Take 001|BaseLayer.001
+    7400036: TRIGGER|Mesh_0010|Take 001|BaseLayer
+    7400038: TRIGGER|POMPEH|Take 001|BaseLayer
+    7400040: TRIGGER|TPhotometricLight001.Target|Take 001|BaseLayer
+    7400042: TRIGGER|TPhotometricLight001|Take 001|BaseLayer
+    7400044: TRIGGER|TPhotometricLight002.Target|Take 001|BaseLayer
+    7400046: TRIGGER|TPhotometricLight002|Take 001|BaseLayer
+    7400048: TRIGGER|TRIGGER|Take 001|BaseLayer
+    7400050: EJECTIONPORT|EJECTIONPORT|Take 001|BaseLayer
+    7400052: EJECTIONPORT|g36c_foregrip|Take 001|BaseLayer
+    7400054: EJECTIONPORT|g36c_foregrip|Take 001|BaseLayer.001
+    7400056: EJECTIONPORT|g36c_holographic|Take 001|BaseLayer
+    7400058: EJECTIONPORT|g36c_holographic|Take 001|BaseLayer.001
+    7400060: EJECTIONPORT|Mesh_0010|Take 001|BaseLayer
+    7400062: EJECTIONPORT|POMPEH|Take 001|BaseLayer
+    7400064: EJECTIONPORT|TPhotometricLight001.Target|Take 001|BaseLayer
+    7400066: EJECTIONPORT|TPhotometricLight001|Take 001|BaseLayer
+    7400068: EJECTIONPORT|TPhotometricLight002.Target|Take 001|BaseLayer
+    7400070: EJECTIONPORT|TPhotometricLight002|Take 001|BaseLayer
+    7400072: EJECTIONPORT|TRIGGER|Take 001|BaseLayer
+    7400074: TPhotometricLight002.Target|EJECTIONPORT|Take 001|BaseLayer
+    7400076: TPhotometricLight002.Target|g36c_foregrip|Take 001|BaseLayer
+    7400078: TPhotometricLight002.Target|g36c_foregrip|Take 001|BaseLayer.001
+    7400080: TPhotometricLight002.Target|g36c_holographic|Take 001|BaseLayer
+    7400082: TPhotometricLight002.Target|g36c_holographic|Take 001|BaseLayer.001
+    7400084: TPhotometricLight002.Target|Mesh_0010|Take 001|BaseLayer
+    7400086: TPhotometricLight002.Target|POMPEH|Take 001|BaseLayer
+    7400088: TPhotometricLight002.Target|TPhotometricLight001.Target|Take 001|BaseLayer
+    7400090: TPhotometricLight002.Target|TPhotometricLight001|Take 001|BaseLayer
+    7400092: TPhotometricLight002.Target|TPhotometricLight002.Target|Take 001|BaseLayer
+    7400094: TPhotometricLight002.Target|TPhotometricLight002|Take 001|BaseLayer
+    7400096: TPhotometricLight002.Target|TRIGGER|Take 001|BaseLayer
+    7400098: TPhotometricLight002|EJECTIONPORT|Take 001|BaseLayer
+    7400100: TPhotometricLight002|g36c_foregrip|Take 001|BaseLayer
+    7400102: TPhotometricLight002|g36c_foregrip|Take 001|BaseLayer.001
+    7400104: TPhotometricLight002|g36c_holographic|Take 001|BaseLayer
+    7400106: TPhotometricLight002|g36c_holographic|Take 001|BaseLayer.001
+    7400108: TPhotometricLight002|Mesh_0010|Take 001|BaseLayer
+    7400110: TPhotometricLight002|POMPEH|Take 001|BaseLayer
+    7400112: TPhotometricLight002|TPhotometricLight001.Target|Take 001|BaseLayer
+    7400114: TPhotometricLight002|TPhotometricLight001|Take 001|BaseLayer
+    7400116: TPhotometricLight002|TPhotometricLight002.Target|Take 001|BaseLayer
+    7400118: TPhotometricLight002|TPhotometricLight002|Take 001|BaseLayer
+    7400120: TPhotometricLight002|TRIGGER|Take 001|BaseLayer
+    7400122: TPhotometricLight001.Target|EJECTIONPORT|Take 001|BaseLayer
+    7400124: TPhotometricLight001.Target|g36c_foregrip|Take 001|BaseLayer
+    7400126: TPhotometricLight001.Target|g36c_foregrip|Take 001|BaseLayer.001
+    7400128: TPhotometricLight001.Target|g36c_holographic|Take 001|BaseLayer
+    7400130: TPhotometricLight001.Target|g36c_holographic|Take 001|BaseLayer.001
+    7400132: TPhotometricLight001.Target|Mesh_0010|Take 001|BaseLayer
+    7400134: TPhotometricLight001.Target|POMPEH|Take 001|BaseLayer
+    7400136: TPhotometricLight001.Target|TPhotometricLight001.Target|Take 001|BaseLayer
+    7400138: TPhotometricLight001.Target|TPhotometricLight001|Take 001|BaseLayer
+    7400140: TPhotometricLight001.Target|TPhotometricLight002.Target|Take 001|BaseLayer
+    7400142: TPhotometricLight001.Target|TPhotometricLight002|Take 001|BaseLayer
+    7400144: TPhotometricLight001.Target|TRIGGER|Take 001|BaseLayer
+    7400146: TPhotometricLight001|EJECTIONPORT|Take 001|BaseLayer
+    7400148: TPhotometricLight001|g36c_foregrip|Take 001|BaseLayer
+    7400150: TPhotometricLight001|g36c_foregrip|Take 001|BaseLayer.001
+    7400152: TPhotometricLight001|g36c_holographic|Take 001|BaseLayer
+    7400154: TPhotometricLight001|g36c_holographic|Take 001|BaseLayer.001
+    7400156: TPhotometricLight001|Mesh_0010|Take 001|BaseLayer
+    7400158: TPhotometricLight001|POMPEH|Take 001|BaseLayer
+    7400160: TPhotometricLight001|TPhotometricLight001.Target|Take 001|BaseLayer
+    7400162: TPhotometricLight001|TPhotometricLight001|Take 001|BaseLayer
+    7400164: TPhotometricLight001|TPhotometricLight002.Target|Take 001|BaseLayer
+    7400166: TPhotometricLight001|TPhotometricLight002|Take 001|BaseLayer
+    7400168: TPhotometricLight001|TRIGGER|Take 001|BaseLayer
+    7400170: Mesh_0010|EJECTIONPORT|Take 001|BaseLayer
+    7400172: Mesh_0010|g36c_foregrip|Take 001|BaseLayer
+    7400174: Mesh_0010|g36c_foregrip|Take 001|BaseLayer.001
+    7400176: Mesh_0010|g36c_holographic|Take 001|BaseLayer
+    7400178: Mesh_0010|g36c_holographic|Take 001|BaseLayer.001
+    7400180: Mesh_0010|Mesh_0010|Take 001|BaseLayer
+    7400182: Mesh_0010|POMPEH|Take 001|BaseLayer
+    7400184: Mesh_0010|TPhotometricLight001.Target|Take 001|BaseLayer
+    7400186: Mesh_0010|TPhotometricLight001|Take 001|BaseLayer
+    7400188: Mesh_0010|TPhotometricLight002.Target|Take 001|BaseLayer
+    7400190: Mesh_0010|TPhotometricLight002|Take 001|BaseLayer
+    7400192: Mesh_0010|TRIGGER|Take 001|BaseLayer
     9500000: //RootNode
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 2
     materialSearch: 1
   animations:
@@ -57,17 +172,17 @@ ModelImporter:
     animationWrapMode: 0
     extraExposedTransformPaths: []
     clipAnimations: []
-    isReadable: 1
+    isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: .100000001
     meshCompression: 0
     addColliders: 0
-    importBlendShapes: 1
+    importBlendShapes: 0
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
+    optimizeMeshForGPU: 0
     keepQuads: 0
     weldVertices: 1
     secondaryUVAngleDistortion: 8
@@ -77,10 +192,10 @@ ModelImporter:
     useFileScale: 1
   tangentSpace:
     normalSmoothAngle: 60
-    splitTangentsAcrossUV: 1
+    splitTangentsAcrossUV: 0
     normalImportMode: 0
     tangentImportMode: 1
-  importAnimation: 1
+  importAnimation: 0
   copyAvatar: 0
   humanDescription:
     human: []
@@ -95,7 +210,7 @@ ModelImporter:
     rootMotionBoneName: 
     hasTranslationDoF: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 2
+  animationType: 0
   humanoidOversampling: 1
   additionalBone: 0
   userData: 

@@ -30,6 +30,7 @@ public class GunMechanics : MonoBehaviour {
 			OutOfAmmo = false;
 			MagazineDropped = false;
 			isShotgun = false;
+			isAutomatic = false;
 			CurrentRate = 0f;
 			CurrentReloadRate = 0f;
 			InitializeGuns(this.gameObject.name);
@@ -56,6 +57,7 @@ public class GunMechanics : MonoBehaviour {
                     ADSsmoothness = 2f;
                     currentBullets = 8;
                     isAutomatic = false;
+					isShotgun = false;
                     accuracy = 15f;
 					Recoil = new Vector3(-1.5f, -20f, 0.01f); //x is recoil in z, y is recoil in x axis, z is time
 					setCrossHairs(accuracy);
@@ -76,6 +78,22 @@ public class GunMechanics : MonoBehaviour {
                     Recoil = new Vector3(-2.5f, -20f, 0.1f);
 					setCrossHairs(accuracy);
                     break;
+				case "G36CModel":
+					bulletSpeed = 250.0f;
+					barrelCapacity = 1;
+					RateOfFire = 0.1f;
+					Damage = 35.0f;
+					MagazineSize = 30;
+					NumberOfMagazines = 5;
+					ReloadTime = 0.7f;
+					ADSsmoothness = 1.5f;
+					currentBullets = 30;
+					isAutomatic = true;
+					isShotgun = false;
+					accuracy = 25f;
+					Recoil = new Vector3(-0.5f, -10f, 0.05f);
+					setCrossHairs(accuracy);
+					break;
             }
     }
 
@@ -218,6 +236,7 @@ public class GunMechanics : MonoBehaviour {
 			{
 				GameObject bulletclone;
 				bulletclone = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/bullet"), transform.position, transform.rotation);
+				bulletclone.transform.Rotate(90f, 0f, 0f);
 				bulletclone.transform.position = bulletSpawn.position;
 				bulletclone.GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed;
 			} else if(isShotgun)
@@ -226,7 +245,9 @@ public class GunMechanics : MonoBehaviour {
 				for (int i = 0; i < bulletclone.Length; i++)
 				{
 					bulletclone[i] = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/bullet"), transform.position, transform.rotation);
-                    if (bulletSpawn != null)
+					bulletclone[i].transform.Rotate(90f, 0f, 0f);
+
+					if (bulletSpawn != null)
                     {
                         bulletclone[i].transform.position = bulletSpawn.position;
                     } else

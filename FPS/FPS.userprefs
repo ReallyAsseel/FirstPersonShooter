@@ -1,11 +1,10 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/BrickMaker.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\GunMovement.cs">
     <Files>
-      <File FileName="Assets/Scripts/BrickMaker.cs" Line="18" Column="3" />
-      <File FileName="Assets/Scripts/GunMovement.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/GunMechanics.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/PlayerController.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\PlayerController.cs" Line="139" Column="27" />
+      <File FileName="Assets\Scripts\GunMovement.cs" Line="68" Column="15" />
+      <File FileName="Assets\Scripts\GunMechanics.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
