@@ -37,6 +37,9 @@ public class EnemyMechanics : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		if (transform.position.y < -100) {
+			Destroy(gameObject);
+		}
         switch(currentState)
         {
             case States.Patrol:
@@ -68,7 +71,7 @@ public class EnemyMechanics : MonoBehaviour {
         {
             speed = 0f;
         }
-        if(wanderTimer <= Random.RandomRange(1f, 5f))
+        if(wanderTimer <= Random.Range(1f, 5f))
         {
             wanderTimer += Time.deltaTime;
         } else

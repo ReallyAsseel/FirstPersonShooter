@@ -4,39 +4,41 @@ using System.Collections;
 public class GunMovement : MonoBehaviour {
 
     public Vector3 ADSPosition, StillPosition, wantedPosition, firePosition;
-    public bool isFiring, isPickup;
-	public GunMechanics bulletControl;
+    public bool isFiring, isPickup, reloadAnim;
+	public GunMechanics gunMech;
     public PlayerController playerController;
-    Animator anim;
+    public Animator anim;
 
 	void Start () {
+		if (this.gameObject.tag == "Pickup") {
+			isPickup = true;
+		} else {
+			isPickup = false;
+		}
+		reloadAnim = false;
 		wantedPosition = transform.localPosition;
-		bulletControl = GetComponentInChildren<GunMechanics> ();
-        anim = this.gameObject.GetComponent<Animator>();
+		gunMech = this.gameObject.GetComponentInChildren<GunMechanics> ();
+		anim = GetComponent<Animator>();
         playerController = GetComponentInParent<PlayerController>();
         Still();
-		if(this.gameObject.tag == "Pickup") {
-			isPickup = true;
-		}
+
 	}
 	
 	void Update () {
-       // if (this.gameObject.name == playerController.currentWeapon.name)
-       // {
-		if (!isPickup && this.gameObject.GetComponentInChildren<GunMechanics>() != null) {
-			transform.localPosition = Vector3.Lerp (transform.localPosition, wantedPosition, bulletControl.ADSsmoothness / 6f);
-			firePosition = new Vector3 (transform.localPosition.x, transform.localPosition.y, bulletControl.Recoil.x);
-			if (bulletControl.isReloading) {
-				anim.SetBool ("Reload", true);
-			} else {
+		if (!isPickup && gunMech != null) {
+			transform.localPosition = Vector3.Lerp (transform.localPosition, wantedPosition, gunMech.ADSsmoothness / 6f);
+			firePosition = new Vector3 (transform.localPosition.x, transform.localPosition.y, gunMech.Recoil.x);
+			if (reloadAnim) {
+				Debug.Log("CUNT");
+				//anim.SetBool ("Reload", true);
+			} else if(!reloadAnim) {
 				anim.SetBool ("Reload", false);
 			}
-			
+
 			Gunmovement ();
 		} else {
 			PickupAnimation ();
 		}
-       // }
     }
 
     public void Recoil()
@@ -58,12 +60,15 @@ public class GunMovement : MonoBehaviour {
 		anim.SetBool ("Pickup", true);
 	}
 
+	public void isDoneReloading() {
+		reloadAnim = false;
+	}
+
     void Gunmovement()
     {
         if (Input.GetMouseButton(1))
         {
-           // wantedPosition = ADSPosition;
-			if(this.gameObject.GetComponentInChildren<GunMechanics>() != null && !this.gameObject.GetComponentInChildren<GunMechanics>().isAutomatic) {
+			if(gunMech != null && !gunMech.isAutomatic) {
 	            if (Input.GetMouseButtonDown(0))
 	            {
 	                isFiring = true;
@@ -76,15 +81,16 @@ public class GunMovement : MonoBehaviour {
 				isFiring = Input.GetMouseButton(0);
 			}
         }
-		else if (this.gameObject.GetComponentInChildren<GunMechanics>() != null && !this.gameObject.GetComponentInChildren<GunMechanics>().isAutomatic)
+		else if (gunMech != null && !gunMech.isAutomatic)
 		{
 			if(Input.GetMouseButtonDown(0)) {
 				isFiring = true;
 			} else {
 				isFiring = false;
 			}
-		} else if(this.gameObject.GetComponentInChildren<GunMechanics>() != null && this.gameObject.GetComponentInChildren<GunMechanics>().isAutomatic) {
+		} else if(gunMech != null && gunMech.isAutomatic) {
 			isFiring = Input.GetMouseButton(0);
+
 		}
 	}
 }

@@ -12,19 +12,21 @@ public class GunMechanics : MonoBehaviour {
 	public GunMovement gunController;
     public PlayerController playerController;
     public Crosshairs crossHairs;
+	public Text pickUpText;
 
 	// Use this for initialization
 	public void Start () {
 		playerController = GameObject.FindObjectOfType<PlayerController>();
-		if(this.gameObject.tag == "Weapon") {
+		gunController = GetComponentInParent<GunMovement> ();
+
+		if (this.gameObject.tag == "Weapon") {
 			canPickup = false;
-            Muzzle = GameObject.Find(this.gameObject.name + "Muzzle");
-            bulletSpawn = GameObject.Find(this.gameObject.name + "BulletSpawn").transform;
-            magazineSpawn = GameObject.Find(this.gameObject.name + "MagazineSpawn").transform;
-            PrimaryGunSlot = GameObject.Find("GunHolder");
-			SecondaryGunSlot = GameObject.Find("SecondGun");
+			Muzzle = GameObject.Find (this.gameObject.name + "Muzzle");
+			bulletSpawn = GameObject.Find (this.gameObject.name + "BulletSpawn").transform;
+			magazineSpawn = GameObject.Find (this.gameObject.name + "MagazineSpawn").transform;
+			PrimaryGunSlot = GameObject.Find ("GunHolder");
+			SecondaryGunSlot = GameObject.Find ("SecondGun");
 			OutOfAmmo = false;
-			gunController = GetComponentInParent<GunMovement> ();
 			ADS = false;
 			isReloading = false;
 			OutOfAmmo = false;
@@ -34,12 +36,11 @@ public class GunMechanics : MonoBehaviour {
 			isAutomatic = false;
 			CurrentRate = 0f;
 			CurrentReloadRate = 0f;
-			InitializeGuns(this.gameObject.name);
-			crossHairs = GameObject.Find("CH").GetComponent<Crosshairs>();
-			//if(playerController.currentWeapon.name + "Model" == this.gameObject.name) {
-				
-			//}
-        }
+			InitializeGuns (this.gameObject.name);
+			crossHairs = GameObject.Find ("CH").GetComponent<Crosshairs> ();
+		} else if (this.gameObject.tag == "Pickup") {
+			pickUpText = GameObject.Find ("PickupText").GetComponent<Text>();
+		}
     }
 
     public void InitializeGuns(string name)
@@ -114,31 +115,33 @@ public class GunMechanics : MonoBehaviour {
 					accuracy = 1f;
 					Recoil = new Vector3(-3f, -20f, 0.5f);
 					setCrossHairs(accuracy);
-                    zoomIn = 5f;
+                    zoomIn = 55f;
 					break;
             }
     }
 
 	void Update () {
-	    if(this.gameObject.tag == "Pickup")
-        {
-            if (Input.GetKey(KeyCode.F) && canPickup)
-            {
-                if (playerController.secondaryWeapon == null)
-                {
-                    playerController.AddWeapon("Gun", this.gameObject.transform.parent.name);
-                    gameObject.GetComponentInParent<Animator>().Stop();
-                    GameObject.Find("PickupText").GetComponent<Text>().enabled = false;
-                    Destroy(gameObject);
-                } else if(this.gameObject.name != playerController.secondaryWeapon.name + "Model")
-                {
-                    playerController.AddWeapon("Gun", this.gameObject.transform.parent.name);
-                    gameObject.GetComponentInParent<Animator>().Stop();
-                    GameObject.Find("PickupText").GetComponent<Text>().enabled = false;
-                    Destroy(gameObject);
-                }
-            }
-        }
+	    if (this.gameObject.tag == "Pickup") {
+			PickUpControl();
+		} else {
+			readyToReload ();
+		}
+	}
+
+	void PickUpControl() {
+		if (Input.GetKey (KeyCode.F) && canPickup) { //Remove getKey.. no input in this class
+			if (playerController.secondaryWeapon == null) {
+				playerController.AddWeapon ("Gun", this.gameObject.transform.parent.name);
+				gameObject.GetComponentInParent<Animator> ().Stop ();
+				pickUpText.enabled = false;
+				Destroy (gameObject);
+			} else if (this.gameObject.name != playerController.secondaryWeapon.name + "Model") {
+				playerController.AddWeapon ("Gun", this.gameObject.transform.parent.name);
+				gameObject.GetComponentInParent<Animator> ().Stop ();
+				pickUpText.enabled = false;
+				Destroy (gameObject);
+			}
+		}
 	}
 
 
@@ -168,7 +171,6 @@ public class GunMechanics : MonoBehaviour {
         {
             ADS = true;
             crossHairs.ToggleCrossHairs(false);
-
             if (camera.fieldOfView < zoomIn - 1)
             {
                 camera.fieldOfView += ADSsmoothness;
@@ -200,25 +202,31 @@ public class GunMechanics : MonoBehaviour {
         GameObject.Find("CH").GetComponent<Crosshairs>().Radius = accuracy;
     }
 
+	void readyToReload() {
+		if (NumberOfMagazines != 0 && currentBullets == 0 && Input.GetMouseButtonDown (0) || (Input.GetKeyDown (KeyCode.R))) {
+			isReloading = true;
+		}
+	}
+
 	public void Reload()
     {
+
 		//Animation play
 		if (isReloading)
         {
 			if (CurrentReloadRate < ReloadTime)
             {
+				gunController.reloadAnim = true;
                 DropMagazine();
                 CurrentReloadRate += 1 * Time.deltaTime;
-			} else { //Actual reloading takes place here.
-				if(NumberOfMagazines > 0) {
-                    MagazineDropped = false;
+			} else if(NumberOfMagazines > 0) { //Actual reloading takes place here.
+					MagazineDropped = false;
 					NumberOfMagazines--;
 					currentBullets = MagazineSize;
 					CurrentReloadRate = 0;
 					isReloading = false;
-				} else {
-					OutOfAmmo = true;
-				}
+			} else if(NumberOfMagazines == 0) {
+				OutOfAmmo = true;
 			}
 		}
 	}
@@ -229,7 +237,6 @@ public class GunMechanics : MonoBehaviour {
             GameObject Magazine = (GameObject)Instantiate(Resources.Load("Prefabs/Magazine"), Vector3.zero, Quaternion.identity);
 
 			if(this.gameObject.name == playerController.currentWeapon.name + "Model") {
-                Debug.Log(this.gameObject.name);
                 if (magazineSpawn != null)
                 {
                     Magazine.transform.position = magazineSpawn.position;
@@ -243,6 +250,8 @@ public class GunMechanics : MonoBehaviour {
             GameObject.Destroy(Magazine, 5f);
         }
     }
+
+
 
     public void Fire()
     {
@@ -287,9 +296,6 @@ public class GunMechanics : MonoBehaviour {
 				bulletclone[2].GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed + new Vector3(-8f, 1f, 0f);
 					
 			}
-		} else if(NumberOfMagazines != 0)
-        {
-			isReloading = true;
 		}
     }
 }

@@ -8,10 +8,13 @@ public class PlayerController : MonoBehaviour {
                  maxSpeed, gravity, maxSprintSpeed;
     public int health;
     public bool isGrounded, isSprinting;
-    public GameObject[] gunSlots;
+	public List<string> weaponNames;
+	public GameObject[] gunSlots;
     public GameObject currentWeapon, secondaryWeapon;
-    public Camera camera;
-    public List<string> weaponNames;
+	public Camera camera;
+	public GunMechanics gunMech;
+	public Crosshairs crossHairs;
+	public Rigidbody rigidBody;
 
 	void Start () {
         weaponNames = new List<string>();
@@ -21,7 +24,8 @@ public class PlayerController : MonoBehaviour {
 		weaponNames.Add("Druganov");
         health = 100;
         gunSlots = new GameObject[2];
-		AddWeapon("Gun", "deagle");
+		AddWeapon("Gun", "G36C");
+		AddWeapon ("Gun", "SPAS 12");
 		if (gunSlots[0] != null)
 		{
 			currentWeapon = gunSlots[0];
@@ -29,17 +33,23 @@ public class PlayerController : MonoBehaviour {
 		if (gunSlots[1] != null) {
 			secondaryWeapon = gunSlots[1];
 		}
-        forwards = 0f;
+
+		forwards = 0f;
         right = 0f;
-        jumpSpeed = 10.0f;
+        jumpSpeed = 15.0f;
 		movementSpeed = 0.03f;
 		stoppingPower = 1.2f;
-		camera = GameObject.FindObjectOfType<Camera>();
 		maxSpeed = .15f;
         maxSprintSpeed = .20f;
 		gravity = 0f;
         isSprinting = false;
         isGrounded = false;
+		rigidBody = this.GetComponent<Rigidbody> ();
+		crossHairs = GameObject.Find ("CH").GetComponent<Crosshairs> ();
+		while (gunMech == null) {
+			gunMech = currentWeapon.GetComponentInChildren<GunMechanics> ();
+		}
+		camera = GameObject.Find ("Main Camera").GetComponent<Camera>();
 	}
 
     void Update () {
@@ -47,11 +57,17 @@ public class PlayerController : MonoBehaviour {
         playerLook();
         SwitchWeapon();
 		FireWeapon (currentWeapon);
-		if(currentWeapon.GetComponentInChildren<GunMechanics>().isReloading) {
-			currentWeapon.GetComponentInChildren<GunMechanics>().Reload();
+		if(gunMech != null) {
+			if(gunMech.isReloading) {
+				gunMech.Reload();
+			}
 		}
-        GameObject.Find("CH").GetComponent<Crosshairs>().Radius = currentWeapon.GetComponentInChildren<GunMechanics>().accuracy;
-        if (GameObject.Find("Trash") != null)
+
+		if (gunMech != null) {
+			crossHairs.Radius = gunMech.accuracy;
+		}
+		/************************************/
+        if (GameObject.Find("Trash") != null) // Put this in gamemaster
         {
             GameObject.Destroy(GameObject.Find("Trash"), 3);
         }
@@ -59,7 +75,7 @@ public class PlayerController : MonoBehaviour {
 
     void playerHit(GameObject enemy)
     {
-        GetComponent<Rigidbody>().velocity = 5 * (transform.position - enemy.transform.position);
+        rigidBody.velocity = 5 * (transform.position - enemy.transform.position);
         health -= (int)enemy.GetComponent<EnemyMechanics>().damage;
     }
 
@@ -80,12 +96,13 @@ public class PlayerController : MonoBehaviour {
     {
         GameObject WEAPON = (GameObject)GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/" + ProperWeaponString(weaponName)));
         WEAPON.name = ProperWeaponString(weaponName);
+		gunMech = WEAPON.GetComponentInChildren<GunMechanics>();
 
-        if (gunSlots[0] == null) {
+		if (gunSlots[0] == null) {
 			WEAPON.transform.parent = GameObject.Find("GunHolder").transform;
 			gunSlots.SetValue(WEAPON, 0);
             currentWeapon = gunSlots[0];
-            currentWeapon.GetComponentInChildren<GunMechanics>().Start();
+            gunMech.Start();
         } else if(gunSlots[1] == null) {
 			WEAPON.transform.parent = GameObject.Find("SecondGun").transform;
 			gunSlots.SetValue(WEAPON, 1);
@@ -106,8 +123,8 @@ public class PlayerController : MonoBehaviour {
                     child.name = "Trash";
                 }
                 currentWeapon = gunSlots[0];
-                currentWeapon.GetComponentInChildren<GunMechanics>().Start();
-            }         
+				gunMech.Start();
+			}         
         }
     }
 
@@ -118,8 +135,8 @@ public class PlayerController : MonoBehaviour {
 			GameObject _tmp = gunSlots[0];
 			gunSlots.SetValue(gunSlots[1], 0);
 			gunSlots.SetValue(_tmp, 1);
-            gunSlots[0].transform.SetParent(FindObjectOfType<GunMechanics>().GetComponent<GunMechanics>().PrimaryGunSlot.transform);
-            gunSlots[1].transform.SetParent(FindObjectOfType<GunMechanics>().GetComponent<GunMechanics>().SecondaryGunSlot.transform);
+            gunSlots[0].transform.SetParent(gunMech.PrimaryGunSlot.transform);
+            gunSlots[1].transform.SetParent(gunMech.SecondaryGunSlot.transform);
         } 
 
 		if (gunSlots[0] != null)
@@ -144,16 +161,16 @@ public class PlayerController : MonoBehaviour {
 	
 	void FireWeapon(GameObject currentWep) //Includes ADS code.
 	{
-        if (Input.GetMouseButton(1) && !currentWeapon.GetComponentInChildren<GunMechanics>().isReloading)
-        {
-            if (currentWep.GetComponent<GunMovement>().isFiring && currentWep.GetComponentInChildren<GunMechanics>().CurrentRate >= currentWep.GetComponentInChildren<GunMechanics>().RateOfFire && !currentWeapon.GetComponentInChildren<GunMechanics>().isReloading)
+		if (Input.GetMouseButton(1) && !gunMech.isReloading && !currentWeapon.GetComponentInChildren<GunMovement>().reloadAnim)
+		{
+            if (currentWep.GetComponent<GunMovement>().isFiring && currentWep.GetComponentInChildren<GunMechanics>().CurrentRate >= currentWep.GetComponentInChildren<GunMechanics>().RateOfFire && !gunMech.isReloading)
             {
-                currentWeapon.GetComponent<GunMovement>().Recoil();
+                currentWep.GetComponent<GunMovement>().Recoil();
                 currentWep.GetComponentInChildren<GunMechanics>().Fire();
             }
             else
             {
-                if (!currentWeapon.GetComponentInChildren<GunMechanics>().isReloading)
+                if (!gunMech.isReloading)
                 {
                     currentWeapon.GetComponent<GunMovement>().ADS();
                 }
@@ -162,9 +179,9 @@ public class PlayerController : MonoBehaviour {
                 currentWep.GetComponentInChildren<GunMechanics>().AimDownSights(camera);
             }
         }
-        else if (currentWep.GetComponent<GunMovement>().isFiring && currentWep.GetComponentInChildren<GunMechanics>().CurrentRate >= currentWep.GetComponentInChildren<GunMechanics>().RateOfFire && !currentWeapon.GetComponentInChildren<GunMechanics>().isReloading)
+        else if (currentWep.GetComponent<GunMovement>().isFiring && currentWep.GetComponentInChildren<GunMechanics>().CurrentRate >= currentWep.GetComponentInChildren<GunMechanics>().RateOfFire && !gunMech.isReloading)
         {
-            currentWeapon.GetComponent<GunMovement>().Recoil();
+            currentWep.GetComponent<GunMovement>().Recoil();
             currentWep.GetComponentInChildren<GunMechanics>().Fire();
         }
         else
@@ -185,7 +202,7 @@ public class PlayerController : MonoBehaviour {
 			gravity -= 0f;
 		}
 
-        if(collision.collider.tag == "Enemy")
+        if(collision.collider.tag == "EnemyWeapon")
         {
             playerHit(collision.gameObject);
             Debug.Log(health);
@@ -204,8 +221,8 @@ public class PlayerController : MonoBehaviour {
 
     void playerMovement()
     {
-        GetComponent<Rigidbody>().position += transform.TransformDirection(new Vector3(right, gravity, forwards));
-        GetComponent<Rigidbody>().AddForce(Physics.gravity * GetComponent<Rigidbody>().mass);
+        rigidBody.position += transform.TransformDirection(new Vector3(right, gravity, forwards));
+        rigidBody.AddForce(Physics.gravity * rigidBody.mass);
 
         if (isGrounded)
         {
@@ -217,12 +234,13 @@ public class PlayerController : MonoBehaviour {
 
         GameObject.FindGameObjectWithTag("GunHolder").GetComponent<Animator>().SetBool("Sprint", isSprinting);
 
-
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
-        {
-            GetComponent<Rigidbody>().velocity = new Vector3(0f, jumpSpeed, 0f);
-            isGrounded = false;
-        } 
+        if (Input.GetKeyDown (KeyCode.Space) && isGrounded) {
+			GetComponent<Rigidbody> ().velocity = new Vector3 (0f, jumpSpeed, 0f);
+			isGrounded = false;
+		} else if (Input.GetKey (KeyCode.Space) && !isGrounded && GetComponent<Rigidbody> ().velocity.y < 10f) {
+			GetComponent<Rigidbody> ().AddForce(0, 1f, 0, ForceMode.Impulse);// = new Vector3(0f, jumpSpeed, 0f);
+			//Minus jetpack fuel here
+		}
 
         if (Input.GetKey(KeyCode.W))
         {

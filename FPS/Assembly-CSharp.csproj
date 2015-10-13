@@ -48,8 +48,6 @@
      <Compile Include="Assets\Scripts\BrickMaker.cs" />
      <Compile Include="Assets\Scripts\BulletDestroy.cs" />
      <Compile Include="Assets\Scripts\Crosshairs.cs" />
-     <Compile Include="Assets\Scripts\EnemyAI.cs" />
-     <Compile Include="Assets\Scripts\EnemyController.cs" />
      <Compile Include="Assets\Scripts\EnemyMechanics.cs" />
      <Compile Include="Assets\Scripts\EnemySpawn.cs" />
      <Compile Include="Assets\Scripts\GunMechanics.cs" />
