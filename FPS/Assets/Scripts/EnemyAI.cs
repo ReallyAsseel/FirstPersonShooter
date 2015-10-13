@@ -1,15 +1,17 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class EnemyAI : MonoBehaviour {
 
 	GameObject player;
 	public float enemySpeed;
+    EnemyMechanics enemyMechanics;
 
 	// Use this for initialization
 	void Start () {
 		player = GameObject.Find ("Player");
 		enemySpeed = 8f;
+        enemyMechanics = gameObject.GetComponent<EnemyMechanics>();
     }
 
     // Update is called once per frame

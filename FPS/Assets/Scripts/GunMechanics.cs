@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 
 public class GunMechanics : MonoBehaviour {
-	public float bulletSpeed, CurrentRate, RateOfFire, ADSsmoothness, ReloadTime, Range, Damage, CurrentReloadRate, accuracy;
+	public float bulletSpeed, CurrentRate, RateOfFire, ADSsmoothness, ReloadTime, Range, Damage, CurrentReloadRate, accuracy, zoomIn;
 	public int MagazineSize, NumberOfMagazines, rand, currentBullets, barrelCapacity;
     public GameObject Muzzle, PrimaryGunSlot, SecondaryGunSlot;
 	public Vector3 Recoil;    
@@ -62,6 +62,7 @@ public class GunMechanics : MonoBehaviour {
                     accuracy = 15f;
 					Recoil = new Vector3(-1.5f, -20f, 0.01f); //x is recoil in z, y is recoil in x axis, z is time
 					setCrossHairs(accuracy);
+                    zoomIn = 57f;
                     break;
                 case "SPAS 12Model":
                     bulletSpeed = 250.0f;
@@ -78,6 +79,7 @@ public class GunMechanics : MonoBehaviour {
                     accuracy = 40f;
                     Recoil = new Vector3(-2.5f, -20f, 0.1f);
 					setCrossHairs(accuracy);
+                    zoomIn = 50f;
                     break;
 				case "G36CModel":
 					bulletSpeed = 250.0f;
@@ -94,6 +96,7 @@ public class GunMechanics : MonoBehaviour {
 					accuracy = 50f;
 					Recoil = new Vector3(-0.1f, -5f, 0.06f);
 					setCrossHairs(accuracy);
+                    zoomIn = 35f;
 					break;
 				case "DruganovModel":
 					bulletSpeed = 250.0f;
@@ -103,7 +106,7 @@ public class GunMechanics : MonoBehaviour {
 					MagazineSize = 5;
 					NumberOfMagazines = 5;
 					ReloadTime = 1f;
-					ADSsmoothness = 1.5f;
+					ADSsmoothness = 3f;
 					currentBullets = 5;
 					isAutomatic = false;
 					isShotgun = false;
@@ -111,6 +114,7 @@ public class GunMechanics : MonoBehaviour {
 					accuracy = 1f;
 					Recoil = new Vector3(-3f, -20f, 0.5f);
 					setCrossHairs(accuracy);
+                    zoomIn = 5f;
 					break;
             }
     }
@@ -160,29 +164,21 @@ public class GunMechanics : MonoBehaviour {
 
 	public void AimDownSights(Camera camera)
 	{
-		ADS = true;
-        crossHairs.ToggleCrossHairs(false);
+        if (!isReloading)
+        {
+            ADS = true;
+            crossHairs.ToggleCrossHairs(false);
 
-		if(!isSniper) {
-	        if (camera.fieldOfView < 29)
-			{
-				camera.fieldOfView += ADSsmoothness;
-			}
-			else if (camera.fieldOfView > 31)
-			{
-				camera.fieldOfView -= ADSsmoothness;
-			}
-		} else {
-			if (camera.fieldOfView < 5)
-			{
-				camera.fieldOfView += ADSsmoothness;
-			}
-			else if (camera.fieldOfView > 6)
-			{
-				camera.fieldOfView -= ADSsmoothness;
-			}
-		}
-
+            if (camera.fieldOfView < zoomIn - 1)
+            {
+                camera.fieldOfView += ADSsmoothness;
+            }
+            else if (camera.fieldOfView > zoomIn + 1)
+            {
+                camera.fieldOfView -= ADSsmoothness;
+            }
+        }
+        
 	}
 
 	public void ReturnFromSights(Camera camera) 
@@ -231,6 +227,7 @@ public class GunMechanics : MonoBehaviour {
         if (!MagazineDropped)
         {
             GameObject Magazine = (GameObject)Instantiate(Resources.Load("Prefabs/Magazine"), Vector3.zero, Quaternion.identity);
+
 			if(this.gameObject.name == playerController.currentWeapon.name + "Model") {
                 Debug.Log(this.gameObject.name);
                 if (magazineSpawn != null)

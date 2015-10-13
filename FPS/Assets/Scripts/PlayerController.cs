@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviour {
 
 	public float forwards, right, movementSpeed, stoppingPower, jumpSpeed, horizontal, vertical,
-                 maxSpeed, gravity, health, maxSprintSpeed;
+                 maxSpeed, gravity, maxSprintSpeed;
+    public int health;
     public bool isGrounded, isSprinting;
     public GameObject[] gunSlots;
     public GameObject currentWeapon, secondaryWeapon;
@@ -18,9 +19,9 @@ public class PlayerController : MonoBehaviour {
         weaponNames.Add("SPAS 12");
 		weaponNames.Add ("G36C");
 		weaponNames.Add("Druganov");
+        health = 100;
         gunSlots = new GameObject[2];
-		AddWeapon("Gun", "Druganov");
-		AddWeapon("Gun", "G36C");
+		AddWeapon("Gun", "deagle");
 		if (gunSlots[0] != null)
 		{
 			currentWeapon = gunSlots[0];
@@ -54,6 +55,12 @@ public class PlayerController : MonoBehaviour {
         {
             GameObject.Destroy(GameObject.Find("Trash"), 3);
         }
+    }
+
+    void playerHit(GameObject enemy)
+    {
+        GetComponent<Rigidbody>().velocity = 5 * (transform.position - enemy.transform.position);
+        health -= (int)enemy.GetComponent<EnemyMechanics>().damage;
     }
 
     string ProperWeaponString(string weaponpickup)
@@ -133,12 +140,11 @@ public class PlayerController : MonoBehaviour {
 		currentWeapon = gunSlots[0];
 		WEAPON.transform.parent = GameObject.Find("GunHolder").transform;
 		gunSlots.SetValue(gunSlots[0], 0);
-
     }
 	
 	void FireWeapon(GameObject currentWep) //Includes ADS code.
 	{
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButton(1) && !currentWeapon.GetComponentInChildren<GunMechanics>().isReloading)
         {
             if (currentWep.GetComponent<GunMovement>().isFiring && currentWep.GetComponentInChildren<GunMechanics>().CurrentRate >= currentWep.GetComponentInChildren<GunMechanics>().RateOfFire && !currentWeapon.GetComponentInChildren<GunMechanics>().isReloading)
             {
@@ -147,7 +153,10 @@ public class PlayerController : MonoBehaviour {
             }
             else
             {
-                currentWeapon.GetComponent<GunMovement>().ADS();
+                if (!currentWeapon.GetComponentInChildren<GunMechanics>().isReloading)
+                {
+                    currentWeapon.GetComponent<GunMovement>().ADS();
+                }
                 currentWep.GetComponentInChildren<GunMechanics>().CurrentRate += 1f * Time.deltaTime;
                 currentWep.GetComponentInChildren<GunMechanics>().Muzzle.GetComponent<SpriteRenderer>().enabled = false;
                 currentWep.GetComponentInChildren<GunMechanics>().AimDownSights(camera);
@@ -175,6 +184,12 @@ public class PlayerController : MonoBehaviour {
 			isGrounded = true;
 			gravity -= 0f;
 		}
+
+        if(collision.collider.tag == "Enemy")
+        {
+            playerHit(collision.gameObject);
+            Debug.Log(health);
+        }
 	}
 
     void playerLook()
