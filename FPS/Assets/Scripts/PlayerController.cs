@@ -58,9 +58,11 @@ public class PlayerController : MonoBehaviour {
         SwitchWeapon();
 		FireWeapon (currentWeapon);
 		if(gunMech != null) {
-			if(gunMech.isReloading) {
-				gunMech.Reload();
-			}
+			gunMech.Reload();
+		}
+
+		if(Input.GetKeyDown(KeyCode.R) || (Input.GetMouseButtonDown(0) && currentWeapon.GetComponentInChildren<GunMechanics>().currentBullets == 0)) {
+			ReloadWeapon(currentWeapon);
 		}
 
 		if (gunMech != null) {
@@ -158,10 +160,14 @@ public class PlayerController : MonoBehaviour {
 		WEAPON.transform.parent = GameObject.Find("GunHolder").transform;
 		gunSlots.SetValue(gunSlots[0], 0);
     }
+
+	void ReloadWeapon(GameObject currentWep) {
+		currentWep.GetComponentInChildren<GunMechanics>().Reload();
+	}
 	
 	void FireWeapon(GameObject currentWep) //Includes ADS code.
 	{
-		if (Input.GetMouseButton(1) && !gunMech.isReloading && !currentWeapon.GetComponentInChildren<GunMovement>().reloadAnim)
+		if (Input.GetMouseButton(1) && !gunMech.isReloading)
 		{
             if (currentWep.GetComponent<GunMovement>().isFiring && currentWep.GetComponentInChildren<GunMechanics>().CurrentRate >= currentWep.GetComponentInChildren<GunMechanics>().RateOfFire && !gunMech.isReloading)
             {
@@ -174,7 +180,7 @@ public class PlayerController : MonoBehaviour {
                 {
                     currentWeapon.GetComponent<GunMovement>().ADS();
                 }
-                currentWep.GetComponentInChildren<GunMechanics>().CurrentRate += 1f * Time.deltaTime;
+                //currentWep.GetComponentInChildren<GunMechanics>().CurrentRate += 1f * Time.deltaTime;
                 currentWep.GetComponentInChildren<GunMechanics>().Muzzle.GetComponent<SpriteRenderer>().enabled = false;
                 currentWep.GetComponentInChildren<GunMechanics>().AimDownSights(camera);
             }
@@ -186,7 +192,7 @@ public class PlayerController : MonoBehaviour {
         }
         else
         {
-            currentWep.GetComponentInChildren<GunMechanics>().CurrentRate += 1f * Time.deltaTime;
+           // currentWep.GetComponentInChildren<GunMechanics>().CurrentRate += 1f * Time.deltaTime;
             currentWep.GetComponentInChildren<GunMechanics>().Muzzle.GetComponent<SpriteRenderer>().enabled = false;
             currentWep.GetComponent<GunMovement>().Still();
             currentWep.GetComponentInChildren<GunMechanics>().ReturnFromSights(camera);

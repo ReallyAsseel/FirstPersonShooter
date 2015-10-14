@@ -203,32 +203,29 @@ public class GunMechanics : MonoBehaviour {
     }
 
 	void readyToReload() {
-		if (NumberOfMagazines != 0 && currentBullets == 0 && Input.GetMouseButtonDown (0) || (Input.GetKeyDown (KeyCode.R))) {
+		if (NumberOfMagazines != 0 && currentBullets == 0 && Input.GetMouseButtonDown(0) || (Input.GetKeyDown (KeyCode.R))) {
 			isReloading = true;
+		} else {
+			isReloading = false;
 		}
 	}
 
 	public void Reload()
-    {
-
-		//Animation play
-		if (isReloading)
-        {
-			if (CurrentReloadRate < ReloadTime)
-            {
-				gunController.reloadAnim = true;
-                DropMagazine();
-                CurrentReloadRate += 1 * Time.deltaTime;
-			} else if(NumberOfMagazines > 0) { //Actual reloading takes place here.
-					MagazineDropped = false;
-					NumberOfMagazines--;
-					currentBullets = MagazineSize;
-					CurrentReloadRate = 0;
-					isReloading = false;
-			} else if(NumberOfMagazines == 0) {
+	{
+				DropMagazine();
+		//if (CurrentReloadRate < 0f)
+		//{
+		//	CurrentReloadRate += 1 * Time.deltaTime;
+		//} else { //Actual reloading takes place here.
+			if(NumberOfMagazines > 0) {
+				MagazineDropped = false;
+				NumberOfMagazines--;
+				currentBullets = MagazineSize;
+				isReloading = false;
+			} else {
 				OutOfAmmo = true;
 			}
-		}
+	//	}
 	}
 
     public void DropMagazine() {
@@ -296,6 +293,8 @@ public class GunMechanics : MonoBehaviour {
 				bulletclone[2].GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed + new Vector3(-8f, 1f, 0f);
 					
 			}
+		} else if(NumberOfMagazines != 0) {
+			isReloading = true;
 		}
     }
 }

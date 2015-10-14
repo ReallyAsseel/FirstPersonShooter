@@ -28,13 +28,11 @@ public class GunMovement : MonoBehaviour {
 		if (!isPickup && gunMech != null) {
 			transform.localPosition = Vector3.Lerp (transform.localPosition, wantedPosition, gunMech.ADSsmoothness / 6f);
 			firePosition = new Vector3 (transform.localPosition.x, transform.localPosition.y, gunMech.Recoil.x);
-			if (reloadAnim) {
-				Debug.Log("CUNT");
-				//anim.SetBool ("Reload", true);
-			} else if(!reloadAnim) {
-				anim.SetBool ("Reload", false);
+			if (gunMech.isReloading) {
+				anim.SetBool ("Reload", true);
+			} else {
+				anim.SetBool("Reload", false);
 			}
-
 			Gunmovement ();
 		} else {
 			PickupAnimation ();
@@ -61,7 +59,7 @@ public class GunMovement : MonoBehaviour {
 	}
 
 	public void isDoneReloading() {
-		reloadAnim = false;
+	//	reloadAnim = false;
 	}
 
     void Gunmovement()
