@@ -6,7 +6,7 @@ public class GunMechanics : MonoBehaviour {
 	public float bulletSpeed, CurrentRate, RateOfFire, ADSsmoothness, ReloadTime, Range, Damage, CurrentReloadRate, accuracy, zoomIn;
 	public int MagazineSize, NumberOfMagazines, rand, currentBullets, barrelCapacity;
     public GameObject Muzzle, PrimaryGunSlot, SecondaryGunSlot;
-	public Vector3 Recoil;    
+	public Vector2 Recoil;    
 	public Transform bulletSpawn, magazineSpawn;
 	public bool ADS, isAutomatic, isReloading, OutOfAmmo, MagazineDropped, isShotgun, canPickup, isSniper;
 	public GunMovement gunController;
@@ -17,7 +17,7 @@ public class GunMechanics : MonoBehaviour {
 	// Use this for initialization
 	public void Start () {
 		playerController = GameObject.FindObjectOfType<PlayerController>();
-		gunController = GetComponentInParent<GunMovement> ();
+		gunController = this.GetComponentInParent<GunMovement> ();
 
 		if (this.gameObject.tag == "Weapon") {
 			canPickup = false;
@@ -56,12 +56,12 @@ public class GunMechanics : MonoBehaviour {
                     MagazineSize = 8;
                     NumberOfMagazines = 5;
                     ReloadTime = 1.5f;
-                    ADSsmoothness = 2f;
+                    ADSsmoothness = 1.5f;
                     currentBullets = 8;
                     isAutomatic = false;
 					isShotgun = false;
                     accuracy = 15f;
-					Recoil = new Vector3(-1.5f, -20f, 0.01f); //x is recoil in z, y is recoil in x axis, z is time
+                    Recoil = new Vector3(-1.5f, -20f); //x-> recoil in z axis, y->recoil in rotation
 					setCrossHairs(accuracy);
                     zoomIn = 57f;
                     break;
@@ -80,7 +80,7 @@ public class GunMechanics : MonoBehaviour {
                     accuracy = 40f;
                     Recoil = new Vector3(-2.5f, -20f, 0.1f);
 					setCrossHairs(accuracy);
-                    zoomIn = 50f;
+                    zoomIn = 54f;
                     break;
 				case "G36CModel":
 					bulletSpeed = 250.0f;
@@ -97,7 +97,7 @@ public class GunMechanics : MonoBehaviour {
 					accuracy = 50f;
 					Recoil = new Vector3(-0.1f, -5f, 0.06f);
 					setCrossHairs(accuracy);
-                    zoomIn = 35f;
+                    zoomIn = 45f;
 					break;
 				case "DruganovModel":
 					bulletSpeed = 250.0f;
@@ -107,15 +107,15 @@ public class GunMechanics : MonoBehaviour {
 					MagazineSize = 5;
 					NumberOfMagazines = 5;
 					ReloadTime = 1f;
-					ADSsmoothness = 3f;
+					ADSsmoothness = 1.5f;
 					currentBullets = 5;
 					isAutomatic = false;
 					isShotgun = false;
 					isSniper = true;
 					accuracy = 1f;
-					Recoil = new Vector3(-3f, -20f, 0.5f);
+					Recoil = new Vector3(-.1f, -20f, 0.5f);
 					setCrossHairs(accuracy);
-                    zoomIn = 55f;
+                    zoomIn = 45f;
 					break;
             }
     }
@@ -123,8 +123,6 @@ public class GunMechanics : MonoBehaviour {
 	void Update () {
 	    if (this.gameObject.tag == "Pickup") {
 			PickUpControl();
-		} else {
-			readyToReload ();
 		}
 	}
 
@@ -143,7 +141,6 @@ public class GunMechanics : MonoBehaviour {
 			}
 		}
 	}
-
 
 	void OnTriggerEnter(Collider collider) {
 		if(this.gameObject.tag == "Pickup") {
@@ -202,30 +199,23 @@ public class GunMechanics : MonoBehaviour {
         GameObject.Find("CH").GetComponent<Crosshairs>().Radius = accuracy;
     }
 
-	void readyToReload() {
-		if (NumberOfMagazines != 0 && currentBullets == 0 && Input.GetMouseButtonDown(0) || (Input.GetKeyDown (KeyCode.R))) {
-			isReloading = true;
-		} else {
-			isReloading = false;
-		}
-	}
-
 	public void Reload()
-	{
-				DropMagazine();
-		//if (CurrentReloadRate < 0f)
-		//{
-		//	CurrentReloadRate += 1 * Time.deltaTime;
-		//} else { //Actual reloading takes place here.
-			if(NumberOfMagazines > 0) {
-				MagazineDropped = false;
-				NumberOfMagazines--;
-				currentBullets = MagazineSize;
-				isReloading = false;
-			} else {
-				OutOfAmmo = true;
-			}
-	//	}
+    {
+        if (!isReloading)
+        {
+            this.DropMagazine();
+            if (NumberOfMagazines > 0)
+            {
+                this.isReloading = true;
+                this.MagazineDropped = false;
+                this.NumberOfMagazines--;
+                this.currentBullets = this.MagazineSize;
+            }
+            else
+            {
+                this.OutOfAmmo = true;
+            }
+        }
 	}
 
     public void DropMagazine() {
@@ -243,24 +233,53 @@ public class GunMechanics : MonoBehaviour {
                 }
 			}
             Magazine.GetComponent<Rigidbody>().AddTorque(50, 0f, 50f);
+            currentBullets = 0;
             MagazineDropped = true;
             GameObject.Destroy(Magazine, 5f);
         }
     }
 
-
-
-    public void Fire()
+    public void FireThisWeapon(Camera camera, GameObject currentWep) //Includes ADS code.
     {
-	//SHOOTING
-		if(currentBullets != 0 && !OutOfAmmo) {
+        if (Input.GetMouseButton(1) && !isReloading)
+        {
+            if (currentWep.GetComponent<GunMovement>().isFiring && currentWep.GetComponentInChildren<GunMechanics>().CurrentRate >= currentWep.GetComponentInChildren<GunMechanics>().RateOfFire && !isReloading)
+            {
+                currentWep.GetComponent<GunMovement>().Recoil();
+                currentWep.GetComponentInChildren<GunMechanics>().ShootBullet();
+            }
+            else
+            {
+                if (!isReloading)
+                {
+                    currentWep.GetComponent<GunMovement>().ADS();
+                }
+                currentWep.GetComponentInChildren<GunMechanics>().CurrentRate += 1f * Time.deltaTime;
+                currentWep.GetComponentInChildren<GunMechanics>().Muzzle.GetComponent<SpriteRenderer>().enabled = false;
+                currentWep.GetComponentInChildren<GunMechanics>().AimDownSights(camera);
+            }
+        }
+        else if (currentWep.GetComponent<GunMovement>().isFiring && currentWep.GetComponentInChildren<GunMechanics>().CurrentRate >= currentWep.GetComponentInChildren<GunMechanics>().RateOfFire && !isReloading)
+        {
+            currentWep.GetComponent<GunMovement>().Recoil();
+            currentWep.GetComponentInChildren<GunMechanics>().ShootBullet();
+        }
+        else
+        {
+            currentWep.GetComponentInChildren<GunMechanics>().CurrentRate += 1f * Time.deltaTime;
+            currentWep.GetComponentInChildren<GunMechanics>().Muzzle.GetComponent<SpriteRenderer>().enabled = false;
+            currentWep.GetComponent<GunMovement>().Still();
+            currentWep.GetComponentInChildren<GunMechanics>().ReturnFromSights(camera);
+        }
+    }
+
+    public void ShootBullet()
+    { 
+        if (currentBullets != 0 && !OutOfAmmo) {
 			currentBullets--;
 			CurrentRate = 0;
 			rand = Random.Range(1, 3);
 			float a = Random.Range(0.2f, 0.5f);
-			if(gunController.isFiring) {
-				gunController.wantedPosition = gunController.firePosition;
-			}
 			Muzzle.transform.localScale = new Vector3(a, a, a);
 			Muzzle.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Muzzle" + rand);
 			Muzzle.GetComponent<SpriteRenderer>().enabled = true;
@@ -293,8 +312,6 @@ public class GunMechanics : MonoBehaviour {
 				bulletclone[2].GetComponent<Rigidbody>().velocity = transform.parent.forward * bulletSpeed + new Vector3(-8f, 1f, 0f);
 					
 			}
-		} else if(NumberOfMagazines != 0) {
-			isReloading = true;
 		}
     }
 }

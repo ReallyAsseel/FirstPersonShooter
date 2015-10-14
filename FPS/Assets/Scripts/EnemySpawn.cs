@@ -16,7 +16,12 @@ public class EnemySpawn : MonoBehaviour {
         {
             Spawn();
         }
-	}
+        /************************************/
+        if (GameObject.Find("Trash") != null) // Put this in gamemaster
+        {
+            GameObject.Destroy(GameObject.Find("Trash"), 3);
+        }
+    }
 
     void Spawn()
     {
