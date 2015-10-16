@@ -59,10 +59,9 @@ public class PlayerController : MonoBehaviour {
         {
             ReloadWeapon(currentWeapon);
         }
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            SwitchWeapon();
-        }
+
+        SwitchWeapon();
+
 
         if(gunMech != null)
         {
@@ -130,24 +129,29 @@ public class PlayerController : MonoBehaviour {
 
     void SwitchWeapon()
     {
-        if(gunSlots[1] != null)
-        {
-			GameObject _tmp = gunSlots[0];
-			gunSlots.SetValue(gunSlots[1], 0);
-			gunSlots.SetValue(_tmp, 1);
-            gunMech = gunSlots[0].GetComponentInChildren<GunMechanics>();
-            gunSlots[0].transform.SetParent(gunMech.PrimaryGunSlot.transform);
-            gunSlots[1].transform.SetParent(gunMech.SecondaryGunSlot.transform);
-
-        }
-
-        if (gunSlots[0] != null)
+		if (Input.GetKeyDown(KeyCode.Q))
 		{
-			currentWeapon = gunSlots[0];
+	        if(gunSlots[1] != null)
+	        {
+				GameObject.FindGameObjectWithTag("GunHolder").GetComponent<Animator>().SetBool("Switch", true);
+				GameObject _tmp = gunSlots[0];
+				gunSlots.SetValue(gunSlots[1], 0);
+				gunSlots.SetValue(_tmp, 1);
+	            gunMech = gunSlots[0].GetComponentInChildren<GunMechanics>();
+	        }
+
+	        if (gunSlots[0] != null)
+			{
+				currentWeapon = gunSlots[0];
+			}
+			if(gunSlots[1] != null) 
+			{
+				secondaryWeapon = gunSlots[1];
+			}
 		}
-		if(gunSlots[1] != null) 
-		{
-			secondaryWeapon = gunSlots[1];
+		if(GameObject.FindGameObjectWithTag("GunHolder").GetComponent<Animator>().GetBool("Switch") == false) {
+			gunSlots[0].transform.SetParent(gunMech.PrimaryGunSlot.transform);
+			gunSlots[1].transform.SetParent(gunMech.SecondaryGunSlot.transform);
 		}
     }
 
